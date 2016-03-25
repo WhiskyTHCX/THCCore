@@ -107,6 +107,16 @@ SCHEDULE THC_PrimToAllInitial IN HydroBase_Prim2ConInitial
 } "Initialize all the other variables"
 
 ###############################################################################
+# Post recover
+###############################################################################
+if(reset_densgain) {
+    SCHEDULE THC_ResetDensgain AT CCTK_POST_RECOVER_VARIABLES
+    {
+        LANG: C
+    } "Resets densgain to zero"
+}
+
+###############################################################################
 # Main loop
 ###############################################################################
 if (CCTK_Equals(evolution_method, "THCode")) {

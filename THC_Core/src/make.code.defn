@@ -13,6 +13,7 @@ SRCS = con2prim.cc \
     thc_param_check.cc \
     thc_prim_to_all.cc \
     thc_printer.cc \
+    thc_reset_densgain.cc \
     thc_rhs.cc \
     thc_select_bc.cc \
     thc_setsym.cc \

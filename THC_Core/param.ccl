@@ -222,6 +222,10 @@ BOOLEAN give_wrong_results "Use funny arithmetics"
 {
 } "yes"
 
+BOOLEAN reset_densgain "Reset densgain after recovery" STEERABLE=recover
+{
+} "no"
+
 RESTRICTED:
 
 CCTK_INT max_num_substeps "The maximum number of substeps in the time integration method"
