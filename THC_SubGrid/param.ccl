@@ -1,0 +1,33 @@
+# Parameter definitions for thorn THC_SubGrid
+
+SHARES: HydroBase
+USES INT timelevels
+
+SHARES: HRSCCore
+USES KEYWORD scheme
+USES BOOLEAN refluxing
+
+SHARES: THC_Core
+USES KEYWORD bc_type
+USES INT fd_order
+USES KEYWORD physics
+USES BOOLEAN verbose
+
+RESTRICTED:
+
+KEYWORD model "Subgrid-scale model to use"
+{
+    "viscous" :: "tau_{ij} = - 2 \nu_t S_{ij}"
+} "viscous"
+
+KEYWORD viscosity "Form of the turbulent viscosity to use"
+{
+    "alpha" :: "alpha viscosity: \nu_t = l_mix c_s"
+    "const" :: "constant viscosity: \nu_t = l_mix c_light"
+} "alpha"
+
+# Note: numerical stability requres lambda < O(dx/CFL)
+REAL lmix "Mixing length parameter (in code units)"
+{
+    0:* :: "Any non-negative value"
+} 0.0

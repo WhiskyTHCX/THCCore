@@ -1,0 +1,83 @@
+# Schedule definitions for thorn THC_SubGrid
+
+STORAGE: nu_turb
+STORAGE: turb_stress[timelevels]
+STORAGE: sconup
+
+###############################################################################
+# Initialization
+###############################################################################
+SCHEDULE THC_SG_SetSym AT CCTK_BASEGRID
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Setup symmetries"
+
+###############################################################################
+# Main loop
+###############################################################################
+
+# -----------------------------------------------------------------------------
+SCHEDULE GROUP THC_SG_SubgridStressesGroup IN HydroBase_PostStep \
+    AFTER HydroBase_Con2Prim
+# -----------------------------------------------------------------------------
+{
+} "Compute the subgrid-scale stress tensor and the contravariant momentum"
+
+SCHEDULE THC_SG_CalcTurbVisc IN THC_SG_SubgridStressesGroup
+{
+    LANG: C
+} "Compute the turbulent viscosity"
+
+SCHEDULE THC_SG_CalcSubgridTensor IN THC_SG_SubgridStressesGroup \
+    AFTER THC_SG_CalcTurbVisc
+{
+    LANG: C
+} "Compute the subgrid-scale turbulent stress tensor and the contravariant momentum"
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+SCHEDULE GROUP THC_SG_BoundariesGroup IN HydroBase_PostStep \
+    AFTER THC_SG_SubgridStressesGroup
+# -----------------------------------------------------------------------------
+{
+} "Apply boundary condition and symmetries to the subgrid-scale turbulent stress tensor"
+
+SCHEDULE THC_SG_SelectBC IN THC_SG_BoundariesGroup
+{
+    LANG: C
+    OPTIONS: SINGLEMAP
+    SYNC: turb_stress
+} "Select boundary conditions for the stress tensor"
+
+SCHEDULE GROUP ApplyBCs AS THC_SG_ApplyBCs IN THC_SG_BoundariesGroup \
+    AFTER THC_SG_SelectBC
+{
+} "Apply boundary/symmetry conditions"
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+if(CCTK_Equals(physics, "GRHD")) {
+    SCHEDULE THC_SG_GRSource IN HydroBase_RHS AFTER THC_GRSource
+    {
+        LANG: C
+    } "Add subgrid-scale gravity in the GRHD RHS"
+}
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+SCHEDULE THC_SG_RHS IN HydroBase_RHS AFTER THC_RHS BEFORE RefluxingSyncGroup
+{
+    LANG: C
+    STORAGE: scratch
+} "Add subgrid-scale contributions to the GRHD fluxes"
+
+# -----------------------------------------------------------------------------
+if(CCTK_Equals(physics, "GRHD")) {
+    SCHEDULE THC_SG_AddToTmunu IN AddToTmunu
+    {
+        LANG: C
+    } "Add subgrid-scale contribution to the stress energy tensor"
+}
+# -----------------------------------------------------------------------------
+

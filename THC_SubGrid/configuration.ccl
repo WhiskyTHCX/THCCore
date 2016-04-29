@@ -1,0 +1,7 @@
+# Configuration definitions for thorn THC_SubGrid
+REQUIRES CPPUtils FDCore
+PROVIDES THC_SubGrid
+{
+    SCRIPT
+    LANG
+}

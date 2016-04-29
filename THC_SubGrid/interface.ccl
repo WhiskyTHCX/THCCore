@@ -1,0 +1,33 @@
+# Interface definition for thorn THC_SubGrid
+IMPLEMENTS:     THC_SubGrid
+INHERITS:       Grid HydroBase Refluxing THC_Core THC_Refluxing TmunuBase
+
+USES INCLUDE: finite_difference.h
+USES INCLUDE: Symmetry.h
+USES INCLUDE: thc_macro.hh
+USES INCLUDE: utils.hh
+
+# Boundary conditions
+CCTK_INT FUNCTION Boundary_SelectGroupForBC(                                   \
+        CCTK_POINTER_TO_CONST IN cctkGH,                                       \
+        CCTK_INT IN faces,                                                     \
+        CCTK_INT IN boundary_width,                                            \
+        CCTK_INT IN table_handle,                                              \
+        CCTK_STRING IN group_name,                                             \
+        CCTK_STRING IN bc_name                                                 \
+    )
+USES FUNCTION Boundary_SelectGroupForBC
+
+PUBLIC:
+
+CCTK_REAL nu_turb TYPE=GF TAGS='Prolongation="None"' "Turbulent viscosity"
+
+CCTK_REAL turb_stress TYPE=GF TIMELEVELS=3 TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="DD_sym" TensorWeight=+1.0 Interpolator="matter"'
+{
+    tau_xx, tau_xy, tau_xz, tau_yy, tau_yz, tau_zz
+} "Reynolds stress tensor"
+
+PRIVATE:
+
+CCTK_REAL sconup[3] TYPE=GF TAGS='Prolongation="None"' "Contravariant densitized conserved momentum"
+CCTK_REAL scratch[9] TYPE=GF TAGS='Prolongation="None"' "Scratch space"
