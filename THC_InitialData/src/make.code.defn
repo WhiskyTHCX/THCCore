@@ -9,6 +9,7 @@ SRCS = thc_id_atmosphere.c \
     thc_id_param_check.c \
     thc_id_random.c \
     thc_id_random_eddies.c \
+    thc_id_shear.c \
     thc_id_shock_tube.c \
     thc_id_simple_wave.c \
     thc_id_static.c \

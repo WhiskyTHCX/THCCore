@@ -26,6 +26,7 @@ KEYWORD id_type "Initial data type"
     "kelvin-helmholtz" :: "Kelvin-Helmholtz instability test"
     "random"           :: "Random initial data"
     "random-eddies"    :: "Random eddies initial data"
+    "shear"            :: "Shear profile"
     "shocktube"        :: "Shock tube"
     "simple-wave"      :: "Simple-wave analytic solution initial-data (SR only!!!)"
     "static"           :: "Boring initial data"
@@ -86,6 +87,16 @@ REAL eddies_max_velocity "Approximate maximum velocity for the eddies initial da
 {
     (0:1) :: "Any number between 0 and 1"
 } 0.5
+
+REAL shear_velocity "Background velocity for the shear profile"
+{
+    0:1) :: "Any number between 0 and 1"
+} 0.0
+
+REAL shear_amplitude "Amplitude of the shear wave"
+{
+    0:1) :: "Any number between 0 and 1"
+} 0.0
 
 INT random_eddies_max_wave_number "Maximum wavenumber for the random eddies initial data"
 {

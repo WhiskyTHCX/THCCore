@@ -60,6 +60,13 @@ if (CCTK_Equals(id_type, "random-eddies")) {
     } "Random eddies initial data"
 }
 
+if (CCTK_Equals(id_type, "shear")) {
+    SCHEDULE THC_ID_Shear IN HydroBase_Initial
+    {
+        LANG: C
+    } "Shear profile"
+}
+
 if (CCTK_Equals(id_type, "shocktube")) {
     SCHEDULE THC_ID_ShockTube IN HydroBase_Initial
     {
