@@ -2,7 +2,7 @@
 
 STORAGE: nu_turb
 STORAGE: turb_stress[timelevels]
-STORAGE: sconup
+STORAGE: veldens[timelevels]
 
 ###############################################################################
 # Initialization
@@ -12,6 +12,12 @@ SCHEDULE THC_SG_SetSym AT CCTK_BASEGRID
     LANG: C
     OPTIONS: GLOBAL
 } "Setup symmetries"
+
+SCHEDULE THC_SG_MoLRegister IN MoL_Register
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register variables with MoL"
 
 ###############################################################################
 # Main loop
@@ -29,11 +35,16 @@ SCHEDULE THC_SG_CalcTurbVisc IN THC_SG_SubgridStressesGroup
     LANG: C
 } "Compute the turbulent viscosity"
 
-SCHEDULE THC_SG_CalcSubgridTensor IN THC_SG_SubgridStressesGroup \
-    AFTER THC_SG_CalcTurbVisc
+SCHEDULE THC_SG_CalcVelDens IN THC_SG_SubgridStressesGroup
 {
     LANG: C
-} "Compute the subgrid-scale turbulent stress tensor and the contravariant momentum"
+} "Compute the densitized velocity"
+
+SCHEDULE THC_SG_CalcSubgridTensor IN THC_SG_SubgridStressesGroup \
+    AFTER (THC_SG_CalcTurbVisc THC_SG_CalcSconUp)
+{
+    LANG: C
+} "Compute the subgrid-scale turbulent stress tensor"
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------

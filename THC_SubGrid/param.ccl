@@ -26,7 +26,7 @@ KEYWORD viscosity "Form of the turbulent viscosity to use"
     "const" :: "constant viscosity: \nu_t = l_mix c_light"
 } "alpha"
 
-# Note: numerical stability requres lambda < O(dx/CFL)
+# Note: numerical stability requres \nu_T ~< 1/4 (dx/dt) dx
 REAL lmix "Mixing length parameter (in code units)"
 {
     0:* :: "Any non-negative value"

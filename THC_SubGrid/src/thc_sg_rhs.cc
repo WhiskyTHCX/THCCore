@@ -23,6 +23,8 @@
 
 #define SQ(X) ((X)*(X))
 
+using namespace utils;
+
 extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
@@ -45,15 +47,15 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
     };
 
     // Slicing geometry
-    utils::tensor::slicing_geometry_const geom(alp, betax, betay, betaz, gxx,
+    tensor::slicing_geometry_const geom(alp, betax, betay, betaz, gxx,
             gxy, gxz, gyy, gyz, gzz, kxx, kxy, kxz, kyy, kyz, kzz, volform);
-    // Conserved momentum, contravariant
-    utils::tensor::generic<CCTK_REAL *, 3, 1> S_u;
-    S_u[0] = &sconup[0*gfsiz];
-    S_u[1] = &sconup[1*gfsiz];
-    S_u[2] = &sconup[2*gfsiz];
+    // Densitized velocity, contravariant
+    tensor::generic<CCTK_REAL *, 3, 1> v_u;
+    v_u[0] = &veldens[0*gfsiz];
+    v_u[1] = &veldens[1*gfsiz];
+    v_u[2] = &veldens[2*gfsiz];
     // Subgrid stress tensor, mixed, densitized and multiplied by the lapse
-    utils::tensor::generic<CCTK_REAL *, 3, 2> tau_du;
+    tensor::generic<CCTK_REAL *, 3, 2> tau_du;
     tau_du[0] = &scratch[0*gfsiz];
     tau_du[1] = &scratch[1*gfsiz];
     tau_du[2] = &scratch[2*gfsiz];
@@ -65,15 +67,24 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
     tau_du[8] = &scratch[8*gfsiz];
     // Momentum sources
     CCTK_REAL * rhs_sconx = static_cast<CCTK_REAL *>(
-            utils::cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[0]"));
+            cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[0]"));
     CCTK_REAL * rhs_scony = static_cast<CCTK_REAL *>(
-            utils::cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[1]"));
+            cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[1]"));
     CCTK_REAL * rhs_sconz = static_cast<CCTK_REAL *>(
-            utils::cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[2]"));
-    utils::tensor::generic<CCTK_REAL *, 3, 1> dot_S_d;
+            cctk::var_data_ptr(cctkGH, 0, "THC_Core::rhs_scon[2]"));
+    tensor::generic<CCTK_REAL *, 3, 1> dot_S_d;
     dot_S_d[0] = rhs_sconx;
     dot_S_d[1] = rhs_scony;
     dot_S_d[2] = rhs_sconz;
+    // Refluxing vars
+    CCTK_REAL * flux = NULL;
+    CCTK_INT const * idx_sconx = NULL;
+    if(refluxing) {
+        flux = static_cast<CCTK_REAL *>(cctk::var_data_ptr(
+                    cctkGH, 0, "Refluxing::flux"));
+        idx_sconx = static_cast<CCTK_INT *>(cctk::var_data_ptr(
+                    cctkGH, 0, "THC_Refluxing::idx_sconx"));
+    }
 
 #pragma omp parallel
     {
@@ -88,28 +99,37 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                 int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
                 // Geometry on the slice
-                utils::tensor::metric<3> g_dd;
+                tensor::metric<3> g_dd;
                 geom.get_metric(ijk, &g_dd);
-                utils::tensor::inv_metric<3> g_uu;
+                tensor::inv_metric<3> g_uu;
                 geom.get_inv_metric(ijk, &g_uu);
 
-                // Gradient of the momentum, mixed components
-                utils::tensor::generic<CCTK_REAL, 3, 2> DS_du;
+                // Gradient of the velocity, mixed components
+                tensor::generic<CCTK_REAL, 3, 2> Dv_du;
                 for(int a = 0; a < 3; ++a)
                 for(int b = 0; b < 3; ++b) {
-                    DS_du(a,b) = sign * idelta[0]*
-                        (S_u(b)[ijk] - S_u(b)[ijk - sign*stride[a]]);
+                    Dv_du(a,b) = sign * idelta[a]*
+                        (v_u(b)[ijk] - v_u(b)[ijk - sign*stride[a]]);
+                }
+
+                // Trace of the gradient of the velocity
+                CCTK_REAL Tr_Dv = 0;
+                for(int a = 0; a < 3; ++a) {
+                    Tr_Dv += Dv_du(a,a);
                 }
 
                 // Compute the subgrid stress tensor
                 for(int a = 0; a < 3; ++a)
                 for(int b = 0; b < 3; ++b) {
-                    tau_du(a,b)[ijk] = DS_du(a,b);
+                    tau_du(a,b)[ijk] = - 1.0/3.0*Tr_Dv*tensor::delta(a,b);
+                    tau_du(a,b)[ijk] += 0.5 * Dv_du(a,b);
                     for(int c = 0; c < 3; ++c)
                     for(int d = 0; d < 3; ++d) {
-                        tau_du(a,b)[ijk] += g_dd(a,c) * g_uu(d,b) * DS_du(d,c);
+                        tau_du(a,b)[ijk] += 0.5 * g_dd(a,c) * g_uu(d,b) * Dv_du(d,c);
                     }
-                    tau_du(a,b)[ijk] *= (-nu_turb[ijk] * alp[ijk]);
+                    tau_du(a,b)[ijk] *= (-2.0 * nu_turb[ijk] * alp[ijk]);
+                    tau_du(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
+                            press[ijk] * SQ(w_lorentz[ijk]));
                 }
             } UTILS_ENDLOOP3(thc_sg_tau_du);
 #pragma omp barrier
@@ -117,12 +137,22 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                     k, cctk_nghostzones[2], cctk_lsh[2] - cctk_nghostzones[2],
                     j, cctk_nghostzones[1], cctk_lsh[1] - cctk_nghostzones[1],
                     i, cctk_nghostzones[0], cctk_lsh[0] - cctk_nghostzones[0]) {
-                // Discrete divergence of the subgrid stress tensor
                 int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+                // Discrete divergence of the subgrid stress tensor
                 for(int a = 0; a < 3; ++a)
                 for(int b = 0; b < 3; ++b) {
                     dot_S_d(a)[ijk] -= 0.5 * sign * idelta[b] *
-                        (tau_du(a,b)[ijk + sign*stride[a]] - tau_du(a,b)[ijk]);
+                        (tau_du(a,b)[ijk + sign*stride[b]] - tau_du(a,b)[ijk]);
+                }
+
+                // Store fluxes for refluxing
+                if(refluxing) {
+                    for(int a = 0; a < 3; ++a)
+                    for(int b = 0; b < 3; ++b) {
+                        flux[(3*(*idx_sconx + a) + b)*gfsiz + ijk] +=
+                            0.5 * tau_du(a,b)[ijk + (sign==1)*stride[b]];
+                    }
                 }
             } UTILS_ENDLOOP3(thc_sg_rhs);
         }

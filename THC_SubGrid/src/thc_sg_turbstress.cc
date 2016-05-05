@@ -23,6 +23,8 @@
 
 #define SQ(X) ((X)*(X))
 
+using namespace utils;
+
 extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
@@ -45,69 +47,56 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
     };
 
     // Slicing geometry
-    utils::tensor::slicing_geometry_const geom(alp, betax, betay, betaz, gxx, gxy, gxz,
+    tensor::slicing_geometry_const geom(alp, betax, betay, betaz, gxx, gxy, gxz,
             gyy, gyz, gzz, kxx, kxy, kxz, kyy, kyz, kzz, volform);
-    // Conserved momentum, covariant
-    utils::tensor::generic<CCTK_REAL const *, 3, 1> S_d;
-    S_d[0] = &scon[0*gfsiz];
-    S_d[1] = &scon[1*gfsiz];
-    S_d[2] = &scon[2*gfsiz];
-    // Conserved momentum, contravariant
-    utils::tensor::generic<CCTK_REAL *, 3, 1> S_u;
-    S_u[0] = &sconup[0*gfsiz];
-    S_u[1] = &sconup[1*gfsiz];
-    S_u[2] = &sconup[2*gfsiz];
+    // Densitized velocity, contravariant
+    tensor::generic<CCTK_REAL *, 3, 1> v_u;
+    v_u[0] = &veldens[0*gfsiz];
+    v_u[1] = &veldens[1*gfsiz];
+    v_u[2] = &veldens[2*gfsiz];
     // Subgrid stress tensor, covariant, undensitized
-    utils::tensor::symmetric2<CCTK_REAL *, 3, 2> tau_dd;
+    tensor::symmetric2<CCTK_REAL *, 3, 2> tau_dd;
     tau_dd[0] = tau_xx;
     tau_dd[1] = tau_xy;
     tau_dd[2] = tau_xz;
     tau_dd[3] = tau_yy;
     tau_dd[4] = tau_yz;
     tau_dd[5] = tau_zz;
-
 #pragma omp parallel
     {
-        UTILS_LOOP3(thc_sg_S_u,
-                k, 0, cctk_lsh[2],
-                j, 0, cctk_lsh[1],
-                i, 0, cctk_lsh[0]) {
-            int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-            utils::tensor::inv_metric<3> g_uu;
-            geom.get_inv_metric(ijk, &g_uu);
-            for(int a = 0; a < 3; ++a) {
-                S_u(a)[ijk] = 0;
-                for(int b = 0; b < 3; ++b) {
-                    S_u(a)[ijk] += g_uu(a,b) * S_d(b)[ijk];
-                }
-            }
-        } UTILS_ENDLOOP3(thc_sg_S_u);
-#pragma omp barrier
         UTILS_LOOP3(thc_sg_tau_dd,
                 k, cctk_nghostzones[2], cctk_lsh[2] - cctk_nghostzones[2],
                 j, cctk_nghostzones[1], cctk_lsh[1] - cctk_nghostzones[1],
                 i, cctk_nghostzones[0], cctk_lsh[0] - cctk_nghostzones[0]) {
             int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-            utils::tensor::metric<3> g_dd;
+            tensor::metric<3> g_dd;
             geom.get_metric(ijk, &g_dd);
 
-            // Gradient of the momentum, mixed components
-            utils::tensor::generic<CCTK_REAL, 3, 2> DS_du;
+            // Gradient of the velocity, mixed components
+            tensor::generic<CCTK_REAL, 3, 2> Dv_du;
             for(int a = 0; a < 3; ++a)
             for(int b = 0; b < 3; ++b) {
-                DS_du(a,b) = 0.5 * idelta[a] *
-                    (S_u(b)[ijk + stride[a]] - S_u(b)[ijk - stride[a]]);
+                Dv_du(a,b) = 0.5 * idelta[a] *
+                    (v_u(b)[ijk + stride[a]] - v_u(b)[ijk - stride[a]]);
+            }
+
+            // Trace of the gradient of the velocity
+            CCTK_REAL Tr_Dv = 0;
+            for(int a = 0; a < 3; ++a) {
+                Tr_Dv += Dv_du(a,a);
             }
 
             // Subgrid stress tensor, covariant components
             for(int a = 0; a < 3; ++a)
             for(int b = a; b < 3; ++b) {
-                tau_dd(a,b)[ijk] = 0;
+                tau_dd(a,b)[ijk] = - 1.0/3.0 * Tr_Dv * g_dd(a,b);
                 for(int c = 0; c < 3; ++c) {
-                    tau_dd(a,b)[ijk] +=
-                        g_dd(c,b)*DS_du(a,c) + g_dd(a,c)*DS_du(b,c);
+                    tau_dd(a,b)[ijk] += 0.5*(
+                        g_dd(c,b)*Dv_du(a,c) + g_dd(a,c)*Dv_du(b,c));
                 }
-                tau_dd(a,b)[ijk] *= (-nu_turb[ijk]/volform[ijk]);
+                tau_dd(a,b)[ijk] *= (-2.0 * nu_turb[ijk] / volform[ijk]);
+                tau_dd(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
+                            press[ijk] * SQ(w_lorentz[ijk]));
             }
         } UTILS_ENDLOOP3(thc_sg_tau_dd);
     }
