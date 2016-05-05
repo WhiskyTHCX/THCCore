@@ -96,7 +96,7 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
                 }
                 tau_dd(a,b)[ijk] *= (-2.0 * nu_turb[ijk] / volform[ijk]);
                 tau_dd(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
-                            press[ijk] * SQ(w_lorentz[ijk]));
+                            press[ijk]) * SQ(w_lorentz[ijk]);
             }
         } UTILS_ENDLOOP3(thc_sg_tau_dd);
     }

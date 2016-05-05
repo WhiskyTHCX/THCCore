@@ -81,7 +81,7 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
     CCTK_INT const * idx_sconx = NULL;
     if(refluxing) {
         flux = static_cast<CCTK_REAL *>(cctk::var_data_ptr(
-                    cctkGH, 0, "Refluxing::flux"));
+                    cctkGH, 0, "Refluxing::flux[0]"));
         idx_sconx = static_cast<CCTK_INT *>(cctk::var_data_ptr(
                     cctkGH, 0, "THC_Refluxing::idx_sconx"));
     }
@@ -129,7 +129,7 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                     }
                     tau_du(a,b)[ijk] *= (-2.0 * nu_turb[ijk] * alp[ijk]);
                     tau_du(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
-                            press[ijk] * SQ(w_lorentz[ijk]));
+                            press[ijk]) * SQ(w_lorentz[ijk]);
                 }
             } UTILS_ENDLOOP3(thc_sg_tau_du);
 #pragma omp barrier
@@ -151,7 +151,7 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                     for(int a = 0; a < 3; ++a)
                     for(int b = 0; b < 3; ++b) {
                         flux[(3*(*idx_sconx + a) + b)*gfsiz + ijk] +=
-                            0.5 * tau_du(a,b)[ijk + (sign==1)*stride[b]];
+                            0.5 * tau_du(a,b)[ijk - (sign==-1)*stride[b]];
                     }
                 }
             } UTILS_ENDLOOP3(thc_sg_rhs);
