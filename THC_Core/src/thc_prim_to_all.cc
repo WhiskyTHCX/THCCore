@@ -85,6 +85,7 @@ extern "C" void THC_PrimToAll(CCTK_ARGUMENTS) {
     std::fill(&w_lorentz[0], &w_lorentz[siz], 1.0);
     std::fill(&csound[0], &csound[siz], 0.0);
     if(!CCTK_Equals(eos_type, "ultrarelativistic")) {
+        std::fill(&c2a_densgain[0], &c2a_densgain[siz], 0.0);
         std::fill(&c2a_nbiter[0], &c2a_nbiter[siz], 0.0);
         std::fill(&volform[0], &volform[siz], 0.0);
     }
@@ -182,6 +183,7 @@ extern "C" void THC_PrimToAllInitial(CCTK_ARGUMENTS) {
     std::fill(&w_lorentz[0], &w_lorentz[siz], 1.0);
     std::fill(&csound[0], &csound[siz], 0.0);
     if(!CCTK_Equals(eos_type, "ultrarelativistic")) {
+        std::fill(&c2a_densgain[0], &c2a_densgain[siz], 0.0);
         std::fill(&c2a_nbiter[0], &c2a_nbiter[siz], 0.0);
         std::fill(&volform[0], &volform[siz], 0.0);
     }
