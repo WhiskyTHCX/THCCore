@@ -1,0 +1,215 @@
+ActiveThorns = "
+ADMBase
+ADMCoupling
+ADMMacros
+Boundary
+Carpet
+CarpetIOASCII
+CarpetIOBasic
+CarpetIOHDF5
+CarpetIOScalar
+CarpetLib
+CarpetReduce
+CarpetSlab
+CartGrid3d
+CoordBase
+EOS_Thermal
+EOS_Thermal_Idealgas
+Formaline
+HydroBase
+HRSCCore
+InitBase
+IOUtil
+LoopControl
+ManualTermination
+MoL
+NanChecker
+Noise
+Periodic
+Slab
+StaticConformal
+SymBase
+THC_Core
+THC_InitialData
+Time
+TimerReport
+TmunuBase
+"
+
+Cactus::terminate			= "time"
+Cactus::cctk_final_time		= 10.0
+
+Formaline::output_source_subdirectory		= "../cactus-source"
+
+ManualTermination::max_walltime		= @WALLTIME_HOURS@
+ManualTermination::on_remaining_walltime	= 30
+
+ManualTermination::termination_from_file	= "yes"
+ManualTermination::termination_file		= "TERMINATE"
+
+NanChecker::check_every		= 100
+NanChecker::check_vars		= "HydroBase::rho"
+NanChecker::action_if_found		= "terminate"
+
+TimerReport::output_all_timers_readable		= "yes"
+
+# =============================================================================
+# Grid
+# =============================================================================
+Grid::avoid_origin			= "no"
+Grid::domain			= "full"
+Grid::type			= "coordbase"
+
+CoordBase::xmin			= -1.0
+CoordBase::xmax			=  1.0
+CoordBase::ymin			= -1.0
+CoordBase::ymax			=  1.0
+CoordBase::zmin			= -1.0
+CoordBase::zmax			=  1.0
+
+CoordBase::spacing			= "numcells"
+CoordBase::ncells_x			= @NCELLS@
+CoordBase::ncells_y			= @NCELLS@
+CoordBase::ncells_z                                         = @NCELLS@
+
+CoordBase::boundary_size_x_lower		= 3
+CoordBase::boundary_size_x_upper		= 3
+CoordBase::boundary_shiftout_x_lower		= 1
+CoordBase::boundary_shiftout_x_upper		= 0
+CoordBase::boundary_staggered_x_lower		= 0
+CoordBase::boundary_staggered_x_upper		= 0
+
+CoordBase::boundary_size_y_lower		= 3
+CoordBase::boundary_size_y_upper		= 3
+CoordBase::boundary_shiftout_y_lower		= 1
+CoordBase::boundary_shiftout_y_upper		= 0
+CoordBase::boundary_staggered_y_lower		= 0
+CoordBase::boundary_staggered_y_upper		= 0
+
+CoordBase::boundary_size_z_lower		= 3
+CoordBase::boundary_size_z_upper		= 3
+CoordBase::boundary_shiftout_z_lower		= 1
+CoordBase::boundary_shiftout_z_upper		= 0
+CoordBase::boundary_staggered_z_lower		= 0
+CoordBase::boundary_staggered_z_upper		= 0
+
+Driver::ghost_size			= 3
+Driver::ghost_size_x		= 3
+Driver::ghost_size_y		= 3
+Driver::ghost_size_z		= 3
+
+Carpet::domain_from_coordbase		= "yes"
+
+Carpet::max_refinement_levels		= 1
+Carpet::prolongation_order_space		= 3
+Carpet::prolongation_order_time		= 2
+Carpet::use_buffer_zones		= "yes"
+Carpet::enable_all_storage		= "no"
+
+# =============================================================================
+# Time integration
+# =============================================================================
+Carpet::num_integrator_substeps		= 3
+
+MoL::ode_method			= "rk3"
+MoL::MoL_Intermediate_Steps		= 3
+MoL::verbose			= "register"
+
+HydroBase::timelevels		= 3
+
+Time::timestep_method		= "courant_static"
+Time::dtfac			= 0.15
+
+# =============================================================================
+# Templated hydrodynamics code
+# =============================================================================
+
+HydroBase::evolution_method		= "THCode"
+
+TmunuBase::support_old_CalcTmunu_mechanism	= "no"
+
+EOS_Thermal::evol_eos_name		= "IdealGas"
+EOS_Thermal_IdealGas::index_n		= 3
+
+THC_InitialData::id_type		= "static"
+Noise::apply_id_noise		= "yes"
+Noise::id_vars			= "
+HydroBase::rho
+HydroBase::vel[0]
+HydroBase::vel[1]
+HydroBase::vel[2]
+HydroBase::eps
+"
+Noise::amplitude			= 1.0e-5
+
+Periodic::periodic			= "yes"
+THC_Core::bc_type			= "none"
+
+THC_Core::eos_type			= "ideal"
+
+# =============================================================================
+# Checkpoint
+# =============================================================================
+CarpetIOHDF5::checkpoint		= "yes"
+CarpetIOHDF5::use_reflevels_from_checkpoint	= "yes"
+
+IOUtil::checkpoint_on_terminate		= "yes"
+IOUtil::checkpoint_every		= 500
+IOUtil::checkpoint_keep		= 1
+IOUtil::recover			= "autoprobe"
+IOUtil::checkpoint_dir		= "./checkpoint"
+IOUtil::recover_dir			= "./parent/checkpoint"
+
+# =============================================================================
+# Output
+# =============================================================================
+IOUtil::out_dir			= "../data/"
+IOUtil::strict_io_parameter_check		= "yes"
+IOUtil::parfile_write		= "copy"
+
+CarpetIOBasic::outinfo_vars		= "
+HydroBase::rho
+"
+
+CarpetIOScalar::outscalar_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::eps
+HydroBase::press
+HydroBase::w_lorentz
+"
+
+CarpetIOASCII::out1d_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::eps
+HydroBase::press
+HydroBase::w_lorentz
+"
+
+CarpetIOHDF5::out2d_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::eps
+HydroBase::press
+HydroBase::w_lorentz
+"
+
+CarpetIOHDF5::out_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::eps
+HydroBase::press
+HydroBase::w_lorentz
+"
+
+CarpetIOBasic::outinfo_every		= 10
+CarpetIOASCII::out0d_every		= 10
+CarpetIOASCII::out1d_every		= 50
+CarpetIOASCII::out2d_every		= -1
+CarpetIOScalar::outscalar_every		= 10
+CarpetIOHDF5::out1d_every		= -1
+CarpetIOHDF5::out2d_every		= 100
+CarpetIOHDF5::out_every		= 500
+
+# vim: set ft=sh tabstop=20 noexpandtab :

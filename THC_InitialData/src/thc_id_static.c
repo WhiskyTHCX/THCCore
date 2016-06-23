@@ -46,9 +46,9 @@ void THC_ID_Static(CCTK_ARGUMENTS) {
             int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
             rho[ijk]  = 1.0;
-            velx[ijk] = 0.0;
-            vely[ijk] = 0.0;
-            velz[ijk] = 0.0;
+            velx[ijk] = static_velx;
+            vely[ijk] = static_vely;
+            velz[ijk] = static_velz;
             eps[ijk]  = 1.0e-2;
 
             for(int e = 0; e < ntracers; ++e) {
