@@ -15,6 +15,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <cassert>
+#include <cmath>
+
 #include "cctk.h"
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
@@ -34,11 +37,13 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
     if(CCTK_Equals(viscosity, "alpha")) {
         for(int i = 0; i < siz; ++i) {
             nu_turb[i] = lmix * csound[i];
+            assert(std::isfinite(nu_turb[i]));
         }
     }
     else if(CCTK_Equals(viscosity, "const")) {
         for(int i = 0; i < siz; ++i) {
             nu_turb[i] = lmix;
+            assert(std::isfinite(nu_turb[i]));
         }
     }
     else {

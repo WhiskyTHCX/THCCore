@@ -2,10 +2,7 @@
 
 # Source files in this directory
 SRCS = thc_sg_grsource.cc \
-       thc_sg_mol_register.cc \
        thc_sg_rhs.cc \
-       thc_sg_select_bc.cc \
-       thc_sg_setsym.cc \
        thc_sg_tmunu.cc \
        thc_sg_turbstress.cc \
        thc_sg_turbvisc.cc \

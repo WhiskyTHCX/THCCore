@@ -142,8 +142,10 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                 // Discrete divergence of the subgrid stress tensor
                 for(int a = 0; a < 3; ++a)
                 for(int b = 0; b < 3; ++b) {
+                    assert(std::isfinite(dot_S_d(a)[ijk]));
                     dot_S_d(a)[ijk] -= 0.5 * sign * idelta[b] *
                         (tau_du(a,b)[ijk + sign*stride[b]] - tau_du(a,b)[ijk]);
+                    assert(std::isfinite(dot_S_d(a)[ijk]));
                 }
 
                 // Store fluxes for refluxing

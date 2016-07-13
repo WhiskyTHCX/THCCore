@@ -3,37 +3,19 @@ IMPLEMENTS:     THC_SubGrid
 INHERITS:       Grid HydroBase THC_Core TmunuBase
 
 USES INCLUDE: finite_difference.h
-USES INCLUDE: Symmetry.h
 USES INCLUDE: thc_macro.hh
 USES INCLUDE: utils.hh
-
-# MoL
-CCTK_INT FUNCTION MoLRegisterConstrained(                                      \
-        CCTK_INT IN ConstrainedIndex                                           \
-    )
-USES FUNCTION MoLRegisterConstrained
-
-# Boundary conditions
-CCTK_INT FUNCTION Boundary_SelectGroupForBC(                                   \
-        CCTK_POINTER_TO_CONST IN cctkGH,                                       \
-        CCTK_INT IN faces,                                                     \
-        CCTK_INT IN boundary_width,                                            \
-        CCTK_INT IN table_handle,                                              \
-        CCTK_STRING IN group_name,                                             \
-        CCTK_STRING IN bc_name                                                 \
-    )
-USES FUNCTION Boundary_SelectGroupForBC
 
 PUBLIC:
 
 CCTK_REAL nu_turb TYPE=GF TAGS='Prolongation="None"' "Turbulent viscosity"
 
-CCTK_REAL turb_stress TYPE=GF TIMELEVELS=3 TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="DD_sym" Interpolator="matter"'
+CCTK_REAL turb_stress TYPE=GF TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="DD_sym" Interpolator="matter"'
 {
     tau_xx, tau_xy, tau_xz, tau_yy, tau_yz, tau_zz
 } "Reynolds stress tensor"
 
-CCTK_REAL veldens[3] TYPE=GF TIMELEVELS=3 TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="U" TensorWeight=+1.0 Interpolator="matter"' "Densitized three velocity"
+CCTK_REAL veldens[3] TYPE=GF TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="U" TensorWeight=+1.0 Interpolator="matter"' "Densitized three velocity"
 
 PRIVATE:
 

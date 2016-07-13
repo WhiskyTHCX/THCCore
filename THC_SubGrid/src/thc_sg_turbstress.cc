@@ -15,6 +15,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <cassert>
+#include <cmath>
+
 #include "cctk.h"
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
@@ -97,6 +100,7 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
                 tau_dd(a,b)[ijk] *= (-2.0 * nu_turb[ijk] / volform[ijk]);
                 tau_dd(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
                             press[ijk]) * SQ(w_lorentz[ijk]);
+                assert(std::isfinite(tau_dd(a,b)[ijk]));
             }
         } UTILS_ENDLOOP3(thc_sg_tau_dd);
     }

@@ -1,23 +1,16 @@
 # Schedule definitions for thorn THC_SubGrid
 
 STORAGE: nu_turb
-STORAGE: turb_stress[timelevels]
-STORAGE: veldens[timelevels]
+STORAGE: turb_stress
+STORAGE: veldens
 
 ###############################################################################
 # Initialization
 ###############################################################################
-SCHEDULE THC_SG_SetSym AT CCTK_BASEGRID
+SCHEDULE GROUP THC_SG_SubgridStressesGroup AT CCTK_INITIAL \
+    AFTER HydroBase_Prim2ConInitial BEFORE SetTmunu
 {
-    LANG: C
-    OPTIONS: GLOBAL
-} "Setup symmetries"
-
-SCHEDULE THC_SG_MoLRegister IN MoL_Register
-{
-    LANG: C
-    OPTIONS: GLOBAL
-} "Register variables with MoL"
+} "Compute the subgrid-scale stress tensor and the contravariant momentum"
 
 ###############################################################################
 # Main loop
@@ -48,26 +41,6 @@ SCHEDULE THC_SG_CalcSubgridTensor IN THC_SG_SubgridStressesGroup \
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-SCHEDULE GROUP THC_SG_BoundariesGroup IN HydroBase_PostStep \
-    AFTER THC_SG_SubgridStressesGroup
-# -----------------------------------------------------------------------------
-{
-} "Apply boundary condition and symmetries to the subgrid-scale turbulent stress tensor"
-
-SCHEDULE THC_SG_SelectBC IN THC_SG_BoundariesGroup
-{
-    LANG: C
-    OPTIONS: SINGLEMAP
-    SYNC: turb_stress
-} "Select boundary conditions for the stress tensor"
-
-SCHEDULE GROUP ApplyBCs AS THC_SG_ApplyBCs IN THC_SG_BoundariesGroup \
-    AFTER THC_SG_SelectBC
-{
-} "Apply boundary/symmetry conditions"
-# -----------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------
 if(CCTK_Equals(physics, "GRHD")) {
     SCHEDULE THC_SG_GRSource IN HydroBase_RHS AFTER THC_GRSource
     {
@@ -82,6 +55,7 @@ SCHEDULE THC_SG_RHS IN HydroBase_RHS AFTER THC_RHS BEFORE RefluxingSyncGroup
     LANG: C
     STORAGE: scratch
 } "Add subgrid-scale contributions to the GRHD fluxes"
+# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 if(CCTK_Equals(physics, "GRHD")) {
@@ -91,4 +65,3 @@ if(CCTK_Equals(physics, "GRHD")) {
     } "Add subgrid-scale contribution to the stress energy tensor"
 }
 # -----------------------------------------------------------------------------
-
