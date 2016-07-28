@@ -1,0 +1,8 @@
+# Main make.code.defn file for thorn THC_Refluxing
+
+# Source files in this directory
+SRCS = thc_rf_paramcheck.cc  \
+       thc_rf_register_fluxes.cc
+
+# Subdirectories containing source files
+SUBDIRS =

@@ -1,0 +1,6 @@
+REQUIRES    CPPUtils HRSCCore THC_Core
+PROVIDES    THC_Tracer
+{
+    SCRIPT
+    LANG
+}

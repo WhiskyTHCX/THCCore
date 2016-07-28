@@ -1,0 +1,7 @@
+# Configuration definitions for thorn THC_HydroExcision
+REQUIRES CPPUtils
+PROVIDES THC_HydroExcision
+{
+    SCRIPT
+    LANG
+}

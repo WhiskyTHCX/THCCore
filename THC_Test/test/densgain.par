@@ -1,0 +1,148 @@
+ActiveThorns = "
+ADMBase
+ADMCoupling
+ADMMacros
+Boundary
+Carpet
+CarpetIOASCII
+CarpetIOBasic
+CarpetIOScalar
+CarpetLib
+CarpetReduce
+CarpetSlab
+CartGrid3d
+CoordBase
+EOS_Thermal
+EOS_Thermal_Idealgas
+HydroBase
+HRSCCore
+InitBase
+IOUtil
+LoopControl
+MoL
+NanChecker
+Slab
+StaticConformal
+SymBase
+THC_Core
+THC_InitialData
+THC_Test
+THC_Tracer
+Time
+TmunuBase
+"
+
+#############################################################
+# Grid
+#############################################################
+
+CoordBase::domainsize                   = minmax
+
+CoordBase::xmin                         = -5
+CoordBase::ymin                         = -1
+CoordBase::zmin                         = -1
+
+CoordBase::xmax                         = 5
+CoordBase::ymax                         = 1
+CoordBase::zmax                         = 1
+
+CoordBase::spacing                      = "numcells"
+CoordBase::ncells_x                     = 10
+CoordBase::ncells_y                     = 1
+CoordBase::ncells_z                     = 1
+
+CoordBase::boundary_size_x_lower        = 2
+CoordBase::boundary_size_y_lower        = 2
+CoordBase::boundary_size_z_lower        = 2
+CoordBase::boundary_shiftout_x_lower    = 1
+CoordBase::boundary_shiftout_y_lower    = 1
+CoordBase::boundary_shiftout_z_lower    = 1
+
+CoordBase::boundary_size_x_upper        = 2
+CoordBase::boundary_size_y_upper        = 2
+CoordBase::boundary_size_z_upper        = 2
+CoordBase::boundary_shiftout_x_upper    = 1
+CoordBase::boundary_shiftout_y_upper    = 1
+CoordBase::boundary_shiftout_z_upper    = 1
+
+CartGrid3D::type                        = "coordbase"
+CartGrid3D::domain                      = "full"
+CartGrid3D::avoid_origin                = "no"
+
+#############################################################
+# Carpet
+#############################################################
+
+Carpet::ghost_size                      = 4
+Carpet::domain_from_coordbase           = "yes"
+Carpet::max_refinement_levels           = 1
+Carpet::init_each_timelevel             = "no"
+Carpet::num_integrator_substeps         = 3
+
+#############################################################
+# Time integration
+#############################################################
+
+Cactus::terminate                     = "iteration"
+Cactus::cctk_itlast                   = 2
+
+Time::timestep_method                 = "given"
+Time::timestep                        = 1.0
+
+MethodOfLines::ode_method             = "RK4"
+MethodOfLines::MoL_Intermediate_Steps = 4
+MethodOfLines::MoL_Num_Scratch_Levels = 1
+MethodOfLines::MoL_NaN_Check          = "yes"
+MethodOfLines::verbose                = "register"
+
+#############################################################
+# Templated Hydrodynamics code
+#############################################################
+
+HydroBase::evolution_method           = "THCode"
+HydroBase::timelevels                 = 3
+THC_Test::enable_hydro_excision       = 1
+
+TmunuBase::support_old_CalcTmunu_mechanism = "no"
+
+EOS_Thermal::evol_eos_name            = "IdealGas"
+EOS_Thermal_Idealgas::index_n         = 1.5
+EOS_Thermal_Idealgas::rho_max         = 1e6
+EOS_Thermal_Idealgas::eps_max         = 1e6
+
+THC_InitialData::id_type              = "static"
+THC_Test::test_type                   = "densgain"
+
+HRSCCore::scheme                      = "FV"
+HRSCCore::reconstruction              = "MinMod"
+
+THC_Core::eos_type                    = "ideal"
+THC_Core::bc_type                     = "flat"
+#THC_Core::verbose                     = "yes"
+
+#############################################################
+# Output
+#############################################################
+
+IO::out_dir                   = $parfile
+IO::out_fileinfo              = "none"
+
+CarpetIOBasic::outInfo_every  = 1
+CarpetIOBasic::outInfo_vars   = "
+THC_Core::dens
+THC_Core::densgain
+"
+
+CarpetIOSCalar::outScalar_reductions = "
+minimum maximum
+"
+CarpetIOScalar::outscalar_vars = "
+THC_Core::dens
+THC_Core::densgain
+THC_Core::c2a_densgain
+THC_Core::c2a_densgain_db
+THC_Core::rhs_densgain
+"
+CarpetIOScalar::outscalar_every = 1
+
+# vim: set ft=sh tabstop=20 noexpandtab :

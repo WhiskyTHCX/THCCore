@@ -1,0 +1,15 @@
+# Main make.code.defn file for thorn THC_Tracer
+
+# Source files in this directory
+SRCS = thc_t_claws.cc \
+    thc_t_cons_to_all.cc \
+    thc_t_init.cc \
+    thc_t_mol_register.cc \
+    thc_t_prim_to_all.cc \
+    thc_t_rhs.cc \
+    thc_t_select_bc.cc \
+    thc_t_setsym.cc
+
+# Subdirectories containing source files
+SUBDIRS =
+

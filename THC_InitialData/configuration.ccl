@@ -1,0 +1,6 @@
+REQUIRES THC_Core GSL
+PROVIDES THC_InitialData
+{
+    SCRIPT
+    LANG
+}

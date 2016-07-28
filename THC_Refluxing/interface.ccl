@@ -1,0 +1,21 @@
+# Interface definition for thorn THC_Refluxing
+IMPLEMENTS: THC_Refluxing
+INHERITS: Refluxing THC_Core THC_Tracer
+
+# Register variables to be refluxed, returns
+CCTK_INT FUNCTION                     \
+    RefluxingRegisterVariable         \
+        (CCTK_INT IN VariableIndex,   \
+         CCTK_INT IN UseSlowSector,   \
+         CCTK_INT OUT FluxIndex)
+REQUIRES FUNCTION RefluxingRegisterVariable
+
+USES INCLUDE: utils.hh
+
+CCTK_INT indices TYPE=scalar
+{
+    idx_dens, idx_densxn, idx_densxp,
+    idx_sconx, idx_scony, idx_sconz,
+    idx_tau,
+    idx_tracer_0, idx_tracer_1, idx_tracer_2, idx_tracer_3
+} "Indices for THC variables; use e.g. as flux[3*index_dens+1] for y-flux for denxity"

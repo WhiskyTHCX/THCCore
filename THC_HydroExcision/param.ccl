@@ -1,0 +1,30 @@
+# Parameter definitions for thorn THC_HydroExcision
+
+SHARES: THC_Core
+USES BOOLEAN verbose
+
+SHARES: HydroBase
+USES CCTK_INT hydro_excision
+
+SHARES: SphericalSurface
+USES CCTK_INT maxnphi
+USES CCTK_INT maxntheta
+
+RESTRICTED:
+
+CCTK_INT excision_surface "Index of the surface to use for excision" STEERABLE=recover
+{
+    0:* :: "Any valid SphericalSurface index"
+} 0
+
+CCTK_REAL excision_margin "Enlarge/shrink the excision region by the given safety margin" STEERABLE=always
+{
+    (0.0:* :: "Any positive number"
+} 1.0
+
+PRIVATE:
+
+CCTK_INT enable_hydro_excision "" ACCUMULATOR-BASE=HydroBase::hydro_excision
+{
+    1 :: ""
+} 1

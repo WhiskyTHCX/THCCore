@@ -1,0 +1,363 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header$
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{David Radice \textless dradice@caltech.edu\textgreater \\
+Filippo Galeazzi \textless galeazzi@th.physik.uni-frankfurt.de\textgreater}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{THC\_LeakageM0}
+
+% the date your document was last changed, if your document is in CVS,
+% please use:
+%    \date{$ $Date: 2004-01-07 12:12:39 -0800 (Wed, 07 Jan 2004) $ $}
+\date{May 20 2014}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+\noindent The leakage scheme implemented in this thorn is modelled after the one
+of \cite{THCode_THCLeakageM0_Ruffert1996} with the additional assumption that the
+chemical potentials for electron and anti-electron neutrinos are the ones given
+by chemical equilibrium as in \cite{THCode_THCLeakageM0_Rosswog2003} (this
+assumption might be relaxed in the future following,
+e.g.~\cite{THCode_THCLeakageM0_OConnor2010}). Since the notation and the reactions
+included are the same ones as in \cite{THCode_THCLeakageM0_Ruffert1996}, here we
+will only present the differences to their approach: the inclusion of GR effects
+and the ``zero-moments'' (M0) scheme we propose for the approximate treatment of
+absorption and heating.
+\end{abstract}
+
+\section{Preliminaries}
+We treat neutrinos as massless particles with four-momentum $\vec{p}$,
+interacting with a (fluid) medium having four-velocity $\vec{u}$. Following
+\cite{THCode_THCLeakageM0_Thorne1981}, we decompose $\vec{p}$ as
+\begin{equation}
+  \vec{p} = (-\vec{p}\cdot\vec{u})(\vec{u} + \vec{r}),
+\end{equation}
+where $E_\nu = - \vec{p}\cdot\vec{u}$ is the energy of neutrinos as seen by an
+observer comoving with the fluid and $\vec{r}$ is such that
+\begin{align}
+  \vec{r} \cdot \vec{r} = 1, &&
+  \vec{u} \cdot \vec{r} = 0
+\end{align}
+and is the propagation direction as seen by the same observer. Finally we
+introduce the 4-propagation vector of the neutrinos
+\begin{equation}
+  \vec{k} = \vec{u} + \vec{r},
+\end{equation}
+notice $\vec{k}\cdot\vec{k} = 0$.
+
+The worldlines of neutrinos can be parametrize with the affine parameter
+\begin{equation}
+  \ell = \int (-\vec{p}\cdot\vec{u}) ds,
+\end{equation}
+so that
+\begin{equation}
+  \frac{\partial}{\partial\ell} = \vec{k}.
+\end{equation}
+Using $\ell$ the Boltzmann equation can be written as
+\cite{THCode_THCLeakageM0_Thorne1981}:
+\begin{equation}
+  \frac{dF}{d\ell} = \mathbb{C}[F],
+\end{equation}
+where $F$ is the distribution function and $\mathbb{C}$ is the collisional term
+\emph{in the fluid frame}.
+
+\section{Optical depth}
+The optical depth between two events in the spacetime $A$ and $B$ (with $B$ in
+the causal future of $A$) is defined to be the number of mean free paths between
+$A$ and $B$:
+\begin{equation}
+  \tau(A,B) = \int_A^B \frac{1}{\lambda} d\ell = \int_A^B \kappa_t d\ell,
+\end{equation}
+where $\kappa_t$ is the total opacity for a given neutrino flavor and computed
+with the appropriate weighting in energy space to model energy or number
+extinction (see \cite{THCode_THCLeakageM0_Ruffert1996}), depending on which
+particular optical depth we want to compute. For the purpose of this section we
+will consider only one optical depth: we treat all of the relevant ones in the
+same way.
+
+In our leakage scheme we initialize the optical depth assuming that neutrinos
+stream mostly radially from one or more centers and we set
+\begin{equation}
+  \tau(r) = \int_\infty^r \kappa_t dr.
+\end{equation}
+Afterwards we use the prescription from \cite{THCode_THCLeakageM0_Neilsen2014}
+to update the optical depth after each timestep (NOTE: not every Runge-Kutta
+substep).
+
+\section{The M0 scheme}
+In our code we treat the free-streaming component of the neutrino radiation
+using an approximate moment scheme in a ray-by-ray approximation. The moment
+scheme that we use employs only 1 moment of the distribution function and uses a
+closure constructed assuming that neutrinos are distributed mostly radially.
+This is even more simple than the popular M1 scheme that retains two moments of
+the distribution function, for this reason we call it the ``M0'' scheme.
+
+\subsection{Neutrino number density evolution}
+The neutrino number current (for a given neutrino flavour) is defined as
+\begin{equation}\label{eq:neutrino.current}
+  \vec{J} = \int F \vec{p} \frac{d^3 p}{-p_0}
+\end{equation}
+and is such that $n = -\vec{J}\cdot\vec{u}$ is the neutrino number density in
+the fluid rest frame. The conservation of lepton number reads
+\begin{equation}\label{eq:neutrino.continuity}
+  \nabla_\mu J^{\mu} = R_\nu - \kappa_a n,
+\end{equation}
+if $J^\mu$ is computed using \eqref{eq:neutrino.current} in the fluid
+rest frame, then $n = J^0$. Notice that \eqref{eq:neutrino.continuity} is an
+exact equation, but it is not a closed equation. We can close it if we assume
+\begin{equation}
+  \vec{J} = n \vec{k},
+\end{equation}
+where $\vec{k}$ is our fiducial radial null vector. In this case we have an
+equation for $n$
+\begin{equation}\label{eq:neutrino.continuity.approx}
+  \partial_t (\sqrt{-g} n k^t) + \partial_r (\sqrt{-g} n k^r) =
+    \sqrt{-g}\big( R_\nu^{\mathrm{eff}} - \kappa_a n ),
+\end{equation}
+where $g$ is the determinant of the 4-metric (in spherical coordinates),
+$R_\nu^{\mathrm{eff}}$ is the effective emission rate (from the leakage
+scheme). If we introduce the ``conserved number density'' $N = \sqrt{-g}
+n k^t$, we can rewrite \eqref{eq:neutrino.continuity.approx} as
+\begin{equation}
+  \partial_t N + \partial_r \Big(\frac{k^r}{k^t} N\Big) = \sqrt{-g}
+  R_\nu^{\mathrm{eff}} - \frac{\kappa_a}{k^t} N.
+\end{equation}
+In our code we solve this equation on a ray-by-ray basis using a fully implicit,
+conservative first-order finite-differencing method. The notation used in
+\texttt{THC\_Leakage} is
+\begin{equation}
+  \partial_t N + \partial_r (\theta N) = \eta - \mu N,
+\end{equation}
+with
+\begin{align}
+  \theta = \frac{k^r}{k^t}, &&
+  \eta = \sqrt{-g} R_\nu^{\mathrm{eff}}, &&
+  \mu = \frac{\kappa_a}{k^t}.
+\end{align}
+
+Once $N$ has been updated the composition of the fluid can be updated taking
+into account the absorption of neutrinos $\kappa_a n$.
+
+\subsection{Neutrino mean energy evolution}
+If we assume that $\vec{t}$ is a Killing vector, then
+$(-\vec{p}\cdot\vec{t})$ is conserved along neutrino worldlines:
+\begin{equation}
+  \frac{d(-\vec{p}\cdot\vec{t})}{d\ell} = 0.
+\end{equation}
+The quantity $\mathcal{E}_\nu = - \vec{p}\cdot\vec{t}$ is the neutrino energy as
+seen by the ``coordinate observer''. In particular
+\begin{equation}
+  \mathcal{E}_\nu = - \vec{p}\cdot\vec{t} = - E_\nu \vec{k}\cdot\vec{t} =: E_\nu
+  \chi.
+\end{equation}
+In this approximation we can write an equation for the mean neutrino energy
+\begin{equation}
+  \frac{d \mathcal{E}_\nu}{d\ell} =
+  \frac{R_\nu^{\mathrm{eff}}}{n} \Big( \chi
+  \frac{Q_\nu^{\mathrm{eff}}}{R_\nu^{\mathrm{eff}}} - \mathcal{E}_\nu \Big),
+\end{equation}
+$Q_\nu^{\mathrm{eff}}$ being the effective cooling rate. Assuming again radial
+propagation we have
+\begin{equation}
+  n k^t \partial_t \mathcal{E}_\nu +
+  n k^r \partial_r \mathcal{E}_\nu =
+ \chi Q_\nu^{\mathrm{eff}} - \mathcal{E}_\nu R_\nu^{\mathrm{eff}}.
+\end{equation}
+In \texttt{THC\_Leakage} we further rewrite this as
+\begin{equation}
+  n \partial_t \mathcal{E}_\nu +
+    n \theta \partial_r \mathcal{E}_\nu =
+      \eta - \mu \mathcal{E}_\nu,
+\end{equation}
+where
+\begin{align}
+  \theta = \frac{k^r}{k^t}, &&
+  \eta = \frac{\chi}{k^t} Q_\nu^{\mathrm{eff}}, &&
+  \mu = \frac{R_\nu^{\mathrm{eff}}}{k^t}
+\end{align}
+and we solve it with a fully-implicit upwind 1st order finite-differencing
+method.
+
+\section{Hydrodynamics coupling}
+The (local comoving) lepton number $R$ and energy $Q$ absorption/emission are
+computed as
+\begin{align}
+  R &= \kappa_a \big(n_{\nu_e} - n_{\nu_a}\big) +
+    \big(R^{\mathrm{eff}}_{\nu_a} - R^{\mathrm{eff}}_{\nu_e}\big), \\
+  Q &= \kappa_a \big(n_{\nu_e} E_{\nu_e} + n_{\nu_a} E_{\nu_a}\big) -
+    \big(Q^{\mathrm{eff}}_{\nu_e} + Q^{\mathrm{eff}}_{\nu_a} +
+    Q^{\mathrm{eff}}_{\nu_x} \big).
+\end{align}
+
+The lepton number equation conservation becomes
+\begin{equation}
+ \nabla_{\mu} (n_e u^\mu) = R,
+\end{equation}
+using $n_e = Y_e n$ and $\rho = m_b n$, $m_b$ being the reference baryon mass,
+we can write this as
+\begin{equation}\label{eq:ye.cons}
+  \nabla_{\mu} (\rho Y_e u^\mu) = m_b R,
+\end{equation}
+or
+\begin{equation}\label{eq:ye.code}
+  \partial_t (\sqrt{\gamma}\rho Y_e W) +  \partial_i (\ldots) =
+    \alpha \sqrt{\gamma} m_b R.
+\end{equation}
+
+The energy-momentum conservation equation reads
+\begin{equation}\label{eq:euler}
+  \nabla_\mu T^{\mu}_{\nu} = u_\nu Q,
+\end{equation}
+The energy equation is obtained by multiplying both sides of (\ref{eq:euler}) by
+$n^\nu$ and subtracting the rest-mass conservation equation to obtain the
+standard Valencia formulation:
+\begin{equation}\label{eq:energy.code}
+  \partial_t (\sqrt{\gamma} \tau) + \partial_i (\ldots) = \alpha W \sqrt{\gamma}
+  Q + \ldots,
+\end{equation}
+where the dots in the RHS denote the geometric source terms.
+
+Similarly the momentum equation is obtained by multiplying both sides of
+(\ref{eq:euler}) by $\partial_i$ to obtain
+\begin{equation}\label{eq:momentum.code}
+  \partial_t (\sqrt{\gamma} S_i) + \partial_j (\ldots) = \alpha W v_i
+  \sqrt{\gamma} Q + \ldots.
+\end{equation}
+
+Equations (\ref{eq:ye.code}), (\ref{eq:energy.code}) and
+(\ref{eq:momentum.code}) are solved using the operator split approach. The
+leakage terms in the composition and energy equations are treated using the
+following scheme. Consider an equation of the form
+\begin{equation}
+  \frac{du}{dt} = f,
+\end{equation}
+where $f$ might depend on $u$, the time and so on. Given the solution at time $n
+\Delta t$, $u^n$, and the source $f^n$, we define $\theta = f^n / u^n$ and we
+assume $\theta \sim \mathrm{const}$. Under this assumption the implicit Euler
+scheme reads
+\begin{equation}
+  u^{n+1} = \frac{u^n}{1 - \theta \Delta t}.
+\end{equation}
+The leakage terms in the momentum equations are not stiff and can be treated
+explicitly instead (also to avoid possible divisions by zero).
+
+\section{Normalization}
+To avoid problems with the floating point precision $n$, $R_\nu$ are normalized
+by $\mathcal{N} = 10^{50}$: $n\rightarrow n/\mathcal{N}, R_\nu \rightarrow
+R_\nu/\mathcal{N}$. The average neutrino energy is similarly also rescaled by a
+factor $\mathcal{N}$: $E_\nu \rightarrow \mathcal{N} E_\nu$.
+
+\begin{thebibliography}{9}
+\bibitem{THCode_THCLeakageM0_Neilsen2014}{
+Neilsen, Liebling, Anderson, Lehner, O'Connor and Palenzuela,
+PRD \textbf{89}, 104029 (2014).
+}
+
+\bibitem{THCode_THCLeakageM0_OConnor2010}{
+  O'Connor and Ott, CQG \textbf{27}, 114103 (2010).
+}
+
+\bibitem{THCode_THCLeakageM0_Ruffert1996}{
+  Ruffert, Janka and Schaefer, A\&A \textbf{311}, 532--566 (1996).
+}
+
+\bibitem{THCode_THCLeakageM0_Rosswog2003}{
+  Rosswog and Liebend\"orfer, MNRAS \textbf{342}, 673--689 (2003).
+}
+
+\bibitem{THCode_THCLeakageM0_Thorne1981}{
+  Thorne, MNRAS \textbf{194}, 439--473 (1981).
+}
+\end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}

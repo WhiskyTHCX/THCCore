@@ -1,0 +1,4 @@
+TEST hsphere
+{
+    NPROCS 2
+}

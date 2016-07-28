@@ -1,0 +1,18 @@
+# Main make.code.defn file for thorn THC_InitialData
+
+# Source files in this directory
+SRCS = thc_id_atmosphere.c \
+    thc_id_eddies.c \
+    thc_id_explosion.c \
+    thc_id_kelvin_helmholtz.c \
+    thc_id_init.c \
+    thc_id_param_check.c \
+    thc_id_random.c \
+    thc_id_random_eddies.c \
+    thc_id_shock_tube.c \
+    thc_id_simple_wave.c \
+    thc_id_static.c \
+    thc_id_vortex.c
+
+# Subdirectories containing source files
+SUBDIRS =

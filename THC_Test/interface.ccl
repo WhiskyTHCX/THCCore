@@ -1,0 +1,5 @@
+# Interface definition for thorn THC_Test
+IMPLEMENTS: THC_Test
+INHERITS: HydroBase
+
+USES INCLUDE: utils_macro.h

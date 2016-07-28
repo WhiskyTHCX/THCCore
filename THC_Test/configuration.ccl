@@ -1,0 +1,7 @@
+# Configuration definitions for thorn THC_Test
+REQUIRES CPPUtils THC_Core
+PROVIDES THC_Test
+{
+    SCRIPT
+    LANG
+}

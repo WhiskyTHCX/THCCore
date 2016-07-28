@@ -1,0 +1,63 @@
+# Schedule definitions for thorn THC_Tracer
+
+STORAGE: tracer[timelevels]
+STORAGE: tracer_dens[timelevels]
+STORAGE: tracer_rhs
+
+###############################################################################
+# Initialization
+###############################################################################
+SCHEDULE THC_T_Init AT CCTK_STARTUP
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register banner"
+
+SCHEDULE THC_T_SetSym AT CCTK_BASEGRID
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Setup symmetries"
+
+SCHEDULE THC_T_HRSCCRegister AT CCTK_WRAGH
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register variable indices with HRSCCore"
+
+SCHEDULE THC_T_MoLRegister IN MoL_Register
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register variables with MoL"
+
+###############################################################################
+# Post-initial data
+###############################################################################
+# Notice that THC never copies data to the past timelevels
+SCHEDULE THC_T_PrimToAllInitial IN HydroBase_Prim2ConInitial AFTER THC_PrimToAllInitial
+{
+    LANG: C
+} "Initialize all the other variables"
+
+###############################################################################
+# Main loop
+###############################################################################
+if(ntracers > 0) {
+    SCHEDULE THC_T_ConsToAll IN HydroBase_Con2Prim
+    {
+        LANG: C
+    } "Computes the primitives from the conservatives"
+
+    SCHEDULE THC_T_RHS IN HydroBase_RHS BEFORE RefluxingSyncGroup
+    {
+        LANG: C
+    } "Compute the RHS for MoL"
+
+    SCHEDULE THC_T_SelectBC IN HydroBase_Select_Boundaries
+    {
+        LANG: C
+        OPTIONS: SINGLEMAP
+        SYNC: tracer_dens
+    } "Apply boundary conditions"
+}

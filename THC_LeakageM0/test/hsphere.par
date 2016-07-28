@@ -1,0 +1,205 @@
+ActiveThorns = "
+ADMBase
+ADMCoupling
+ADMMacros
+AEILocalInterp
+Boundary
+Carpet
+CarpetIOASCII
+CarpetIOBasic
+CarpetIOHDF5
+CarpetIOScalar
+CarpetInterp
+CarpetLib
+CarpetReduce
+CarpetSlab
+CartGrid3d
+CoordBase
+CoordGauge
+FakeRates
+GenericFD
+HydroBase
+HRSCCore
+EOS_Thermal
+EOS_Thermal_Idealgas
+InitBase
+IOUtil
+LoopControl
+MoL
+ReflectionSymmetry
+Slab
+SphericalSurface
+StaticConformal
+SymBase
+THC_Core
+THC_LeakageBase
+THC_LeakageM0
+THC_Tracer
+Time
+TmunuBase
+"
+
+Cactus::terminate			= "time"
+Cactus::cctk_final_time		= 2
+
+# =============================================================================
+# Grid
+# =============================================================================
+Grid::avoid_origin			= "no"
+Grid::domain			= "full"
+Grid::type			= "coordbase"
+
+ReflectionSymmetry::reflection_x		= "no"
+ReflectionSymmetry::reflection_y		= "no"
+ReflectionSymmetry::reflection_z		= "yes"
+ReflectionSymmetry::avoid_origin_x		= "no"
+ReflectionSymmetry::avoid_origin_y		= "no"
+ReflectionSymmetry::avoid_origin_z		= "no"
+
+CoordBase::xmin			= -2
+CoordBase::xmax			= 2
+CoordBase::ymin			= -2
+CoordBase::ymax			= 2
+CoordBase::zmin			= 0
+CoordBase::zmax			= 2
+
+CoordBase::spacing			= "numcells"
+CoordBase::ncells_x			= 40
+CoordBase::ncells_y			= 40
+CoordBase::ncells_z			= 20
+
+CoordBase::boundary_size_x_lower		= 3
+CoordBase::boundary_size_x_upper		= 3
+CoordBase::boundary_shiftout_x_lower		= 1
+CoordBase::boundary_shiftout_x_upper		= 0
+
+CoordBase::boundary_size_y_lower		= 3
+CoordBase::boundary_size_y_upper		= 3
+CoordBase::boundary_shiftout_y_lower		= 1
+CoordBase::boundary_shiftout_y_upper		= 0
+
+CoordBase::boundary_size_z_lower		= 3
+CoordBase::boundary_size_z_upper		= 3
+CoordBase::boundary_shiftout_z_lower		= 1
+CoordBase::boundary_shiftout_z_upper		= 0
+
+Driver::ghost_size			= 3
+Driver::ghost_size_x		= 3
+Driver::ghost_size_y		= 3
+Driver::ghost_size_z		= 3
+
+Carpet::domain_from_coordbase		= "yes"
+
+InitBase::initial_data_setup_method		= "init_all_levels"
+
+Carpet::max_refinement_levels		= 1
+Carpet::prolongation_order_space		= 3
+Carpet::prolongation_order_time		= 2
+Carpet::use_buffer_zones		= "yes"
+Carpet::enable_all_storage		= "no"
+
+Carpet::grid_coordinates_filename		= "grid.carpet"
+
+# =============================================================================
+# Initial data
+# =============================================================================
+HydroBase::initial_hydro		= "THC_LeakageM0"
+HydroBase::initial_Y_e		= "one"
+HydroBase::initial_temperature		= "zero"
+HydroBase::initial_entropy		= "zero"
+HydroBase::timelevels		= 3
+
+# =============================================================================
+# Templated hydrodynamics code
+# =============================================================================
+Time::timestep_method		= "given"
+Time::timestep			= 0.05
+
+TmunuBase::support_old_CalcTmunu_mechanism	= "no"
+
+EOS_Thermal::evol_eos_name		= "IdealGas"
+
+FakeRates::eta_nue			= 5.0
+FakeRates::eta_nua			= 5.0
+FakeRates::eta_nux			= 5.0
+FakeRates::kappa_abs_nue		= 5.0
+FakeRates::kappa_abs_nua		= 5.0
+
+#THC_Core::verbose			= "yes"
+
+THC_LeakageBase::interpolator_options		= "order=1"
+THC_LeakageBase::rmax		= 2
+THC_LeakageBase::nrad		= 20
+THC_LeakageBase::ntheta		= 32
+THC_LeakageBase::nphi		= 64
+THC_LeakageBase::DiffFact		= 6.0
+
+THC_LeakageM0::rmax			= 2
+THC_LeakageM0::nrad			= 20
+THC_LeakageM0::nray			= 2048
+THC_LeakageM0::interpolator_options		= "order=1"
+THC_LeakageM0::test_homogeneous_sphere		= "yes"
+
+# =============================================================================
+# Spacetime evolution
+# =============================================================================
+ADMBase::evolution_method		= "static"
+ADMBase::lapse_evolution_method		= "static"
+ADMBase::shift_evolution_method		= "static"
+ADMBase::dtlapse_evolution_method		= "static"
+ADMBase::dtshift_evolution_method		= "static"
+
+# =============================================================================
+# Output
+# =============================================================================
+IOUtil::out_dir			= $parfile
+IOUtil::out_fileinfo		= "none"
+IOUtil::strict_io_parameter_check		= "yes"
+IOUtil::parfile_write		= "no"
+
+CarpetIOBasic::outinfo_vars		= "
+THC_LeakageM0::thc_M0_ndens_nue
+THC_LeakageM0::thc_M0_nue_num_flux
+"
+
+CarpetIOScalar::outscalar_reductions		= "
+minimum maximum norm1 norm2
+"
+CarpetIOScalar::outscalar_vars		= "
+THC_LeakageM0::thc_leakage_vars
+THC_LeakageM0::thc_leakage_M0_vars
+THC_LeakageM0::thc_leakage_M0_evol
+"
+
+CarpetIOASCII::out0D_vars		= "
+THC_LeakageM0::thc_leakage_M0_flux
+"
+
+CarpetIOASCII::out1d_vars		= "
+THC_LeakageBase::thc_leakage_optd
+THC_LeakageBase::thc_leakage_opacity
+THC_LeakageM0::thc_leakage_vars
+THC_LeakageM0::thc_leakage_M0_vars
+THC_LeakageM0::thc_leakage_M0_evol
+"
+
+CarpetIOHDF5::out2d_vars		= "
+THC_LeakageM0::thc_leakage_vars
+THC_LeakageM0::thc_leakage_M0_vars
+THC_LeakageM0::thc_leakage_M0_evol
+"
+
+CarpetIOHDF5::out_vars		= "
+THC_LeakageM0::thc_leakage_vars
+THC_LeakageM0::thc_leakage_M0_vars
+THC_LeakageM0::thc_leakage_M0_evol
+"
+
+CarpetIOBasic::outinfo_every		= 10
+CarpetIOScalar::outscalar_every		= 10
+CarpetIOASCII::out0D_every		= 10
+CarpetIOASCII::out1D_every		= -1
+CarpetIOHDF5::out2d_every		= -1
+CarpetIOHDF5::out_every		= -1
+
+# vim: set ft=sh tabstop=20 noexpandtab :

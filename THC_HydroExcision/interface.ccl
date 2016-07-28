@@ -1,0 +1,5 @@
+# Interface definition for thorn THC_HydroExcision
+IMPLEMENTS: THC_HydroExcision
+INHERITS: Grid HydroBase SphericalSurface
+
+USES INCLUDE: utils_macro.h

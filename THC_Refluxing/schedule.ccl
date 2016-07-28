@@ -1,0 +1,19 @@
+# Schedule definitions for thorn THC_Refluxing
+
+STORAGE: indices
+
+SCHEDULE THC_RF_ParamCheck AT CCTK_PARAMCHECK
+{
+    LANG: C
+} "Check parameters"
+
+# must be scheduled after all of the refluxed variables that will be evolved
+# with MoL are registered with MoL
+SCHEDULE THC_RF_RegisterFluxes IN MoL_Register AFTER THC_MoLRegister
+{
+    LANG: C
+} "Register evolved variables"
+
+SCHEDULE GROUP RefluxingSyncGroup IN HydroBase_RHS AFTER THC_RHS
+{
+} "Sychronize the captured fluxes"

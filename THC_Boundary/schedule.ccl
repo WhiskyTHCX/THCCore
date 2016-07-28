@@ -1,0 +1,6 @@
+# Schedule definitions for thorn THC_Boundary
+
+SCHEDULE THC_BC_Apply IN HydroBase_Boundaries AFTER HydroBase_ApplyBCs
+{
+    LANG: C
+} "Apply custom boundary conditions"

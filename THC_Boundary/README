@@ -1,0 +1,9 @@
+Cactus Code Thorn THC_Boundary
+Author(s)    : David Radice <dradice@caltech.edu>
+Maintainer(s): David Radice <dradice@caltech.edu>
+Licence      : GPLv3
+--------------------------------------------------------------------------
+
+1. Purpose
+
+Custom boundary conditions for the Templated Hydrodynamics Code

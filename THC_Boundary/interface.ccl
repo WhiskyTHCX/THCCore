@@ -1,0 +1,3 @@
+# Interface definition for thorn THC_Boundary
+IMPLEMENTS: THC_Boundary
+INHERITS: THC_Core

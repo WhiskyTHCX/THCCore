@@ -1,0 +1,7 @@
+# Configuration definitions for thorn THC_LeakageM0
+REQUIRES CPPUtils MPI
+PROVIDES THC_LeakageM0
+{
+    SCRIPT
+    LANG
+}

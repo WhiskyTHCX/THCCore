@@ -1,0 +1,22 @@
+# Parameter definitions for thorn THC_Test
+
+SHARES: THC_Core
+USES BOOLEAN verbose
+
+SHARES: HydroBase
+USES CCTK_INT hydro_excision
+
+PRIVATE:
+
+KEYWORD test_type "Which test are we going to do"
+{
+    "densgain" :: "Check that densgain work"
+    "none"     :: "Don't do anything"
+} "none"
+
+PRIVATE:
+
+CCTK_INT enable_hydro_excision "" ACCUMULATOR-BASE=HydroBase::hydro_excision
+{
+    0:1 :: "Set to 1 if test_type is densgain"
+} 0

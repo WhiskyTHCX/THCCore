@@ -1,0 +1,15 @@
+# Main make.code.defn file for thorn THC_LeakageM0
+
+# Source files in this directory
+SRCS = thc_M0_compute.c \
+       thc_M0_grid.c \
+       thc_M0_init.c \
+       thc_M0_init_data.c \
+       thc_M0_interp.c \
+       thc_M0_kernel.cc \
+       thc_M0_param_check.c \
+       thc_M0_switch.c \
+       thc_M0_test.c
+
+# Subdirectories containing source files
+SUBDIRS =

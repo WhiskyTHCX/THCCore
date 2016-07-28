@@ -1,0 +1,113 @@
+# Schedule definitions for thorn THC_LeakageM0
+
+STORAGE: thc_leakage_M0_is_on
+STORAGE: thc_leakage_M0_flux
+
+STORAGE: thc_leakage_vars
+STORAGE: thc_leakage_M0_vars
+STORAGE: thc_M0_flux_fac
+STORAGE: thc_leakage_M0_evol, thc_leakage_M0_evol_old
+STORAGE: thc_M0_mask
+
+###############################################################################
+# Initialization
+###############################################################################
+SCHEDULE THC_M0_Init AT CCTK_STARTUP
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register banner"
+
+SCHEDULE THC_M0_ParamCheck AT CCTK_PARAMCHECK
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Check parameters"
+
+SCHEDULE THC_M0_SetupGrid AT CCTK_INITIAL
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Setup M0 grid"
+
+SCHEDULE THC_M0_InitData IN HydroBase_Initial
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Initial data for the neutrino Beam scheme"
+
+if(test_homogeneous_sphere) {
+    SCHEDULE THC_M0_TestInitHydro IN HydroBase_Initial
+    {
+        LANG: C
+    } "Initial data for the homogeneous sphere test problem"
+}
+
+###############################################################################
+# Recovery
+###############################################################################
+if(reset_on_recovery) {
+    SCHEDULE THC_M0_SetupGrid AT CCTK_POST_RECOVER_VARIABLES
+    {
+        LANG: C
+        OPTIONS: GLOBAL
+    } "Setup M0 grid"
+
+    SCHEDULE THC_M0_InitData IN CCTK_POST_RECOVER_VARIABLES
+    {
+        LANG: C
+        OPTIONS: GLOBAL
+    } "Initial data for the neutrino Beam scheme"
+}
+else {
+    SCHEDULE THC_M0_RecoverGrid AT CCTK_POST_RECOVER_VARIABLES
+    {
+        LANG: C
+        OPTIONS: GLOBAL
+    } "Setup M0 grid"
+}
+
+
+###############################################################################
+# Transport neutrino on the spherical grid
+###############################################################################
+SCHEDULE GROUP THC_M0_CalcGroup AT CCTK_EVOL AFTER THC_LK_BoundaryGroup
+{
+} "Compute rates and advect neutrinos on the spherical grid"
+
+# The M0 scheme is run after the Hydro evolution (this is why it is GLOBAL-LATE)
+SCHEDULE THC_M0_Switch IN THC_M0_CalcGroup
+{
+    LANG: C
+    OPTIONS: GLOBAL-LATE
+} "Switch M0 on/off as needed"
+
+SCHEDULE THC_M0_InterpToSph IN THC_M0_CalcGroup AFTER THC_M0_Switch
+{
+    LANG: C
+    OPTIONS: GLOBAL-LATE
+} "Interpolate all of the quantities onto the spherical grid"
+
+SCHEDULE THC_M0_Compute IN THC_M0_CalcGroup AFTER THC_M0_InterpToSph
+{
+    LANG: C
+    OPTIONS: GLOBAL-LATE
+} "Compute neutrino transport on the spherical grid"
+
+###############################################################################
+# Compute neutrino absorption/heating
+###############################################################################
+if(CCTK_Equals(neu_abs_type, "THC_LeakageM0")) {
+    SCHEDULE THC_M0_InterpToCart IN THC_LK_CalcNeuAbsorptionGroup
+    {
+        LANG: C
+    } "Interpolate the results back to the cartesian grid"
+}
+
+###############################################################################
+# Cleanup
+###############################################################################
+SCHEDULE THC_M0_FreeGrid AT CCTK_TERMINATE BEFORE Driver_Terminate
+{
+    LANG: C
+} "De-allocates the spherical grid used for the leakage"

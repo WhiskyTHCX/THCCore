@@ -1,0 +1,8 @@
+# Schedule definitions for thorn THC_Test
+
+if (CCTK_Equals(test_type, "densgain")) {
+    SCHEDULE THC_TST_SetToAtmosphere IN MoL_PostStep BEFORE HydroBase_PostStep
+    {
+        LANG: C
+    } "Abuse excision mechanism to reset all data to atmosphere"
+}

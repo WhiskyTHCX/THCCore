@@ -1,0 +1,124 @@
+# Parameter definitions for thorn THC_InitialData
+
+SHARES: HydroBase
+EXTENDS KEYWORD initial_hydro "Hydro initial data"
+{
+    "THC_Initial" :: ""
+}
+EXTENDS KEYWORD initial_Y_e "Y_e initial data"
+{
+    "THC_Initial" :: ""
+}
+
+SHARES: THC_Core
+USES BOOLEAN verbose
+
+SHARES: THC_Tracer
+USES BOOLEAN ntracers
+
+PRIVATE:
+
+KEYWORD id_type "Initial data type"
+{
+    "atmosphere"       :: "Atmosphere initial data"
+    "eddies"           :: "Taylor-Green-like vortices"
+    "explosion"        :: "Spherical explosion"
+    "kelvin-helmholtz" :: "Kelvin-Helmholtz instability test"
+    "random"           :: "Random initial data"
+    "random-eddies"    :: "Random eddies initial data"
+    "shocktube"        :: "Shock tube"
+    "simple-wave"      :: "Simple-wave analytic solution initial-data (SR only!!!)"
+    "static"           :: "Boring initial data"
+    "vortex"           :: "Relativistic vortex solution of Lyutikov"
+} "atmosphere"
+
+KEYWORD kelvin_helmholtz_case "Which Kelvin-Helmholtz instability to study"
+{
+    "2D" :: "Two dimensional KH"
+    "3D" :: "Three dimensional KH"
+} "2D"
+
+KEYWORD shocktube_case "Which shock tube"
+{
+    "blast_wave"   :: "Second blast wave test from Marti LRR-2003-7"
+    "collision"    :: "Ultra-relativistic collision"
+    "contact"      :: "Contact discontinuity"
+    "sod"          :: "Relativistic Sod test"
+    "strong_shock" :: "First blast wave test from Marti LRR-2003-7"
+    "transverse"   :: "Transverse velocity test"
+    "vacuum"       :: "Vacuum Riemann problem"
+} "sod"
+
+KEYWORD shocktube_dir "Which direction to use for the shock tube tesst"
+{
+    "d" :: "diagonal"
+    "x" :: "x-axis"
+    "y" :: "y-axis"
+    "z" :: "z-axis"
+} "x"
+
+REAL shocktube_width "Width of the initial shock"
+{
+    0:*) :: "Any non-negative number"
+} 0.0
+
+REAL simple_wave_kappa "Polytropic constant for the simple-wave initial data"
+{
+    (0:* :: "Any positive number"
+} 100.0
+
+REAL simple_wave_gamma "Polytropic index for the simple-wave initial data"
+{
+    (1:2 :: "Any physically reasonable value"
+} 1.66666666666667
+
+REAL collision_w_lorentz "Lorentz factor for the ultrarelativistic collision"
+{
+    1:* :: "Any real number larger then 1"
+} 100.0
+
+INT eddies_wave_number "Wave number for the eddies initial data"
+{
+    1:*   :: "Any positive integer number"
+} 1
+
+REAL eddies_max_velocity "Approximate maximum velocity for the eddies initial data"
+{
+    (0:1) :: "Any number between 0 and 1"
+} 0.5
+
+INT random_eddies_max_wave_number "Maximum wavenumber for the random eddies initial data"
+{
+    1:* :: "Any positive integer number"
+} 5
+
+CCTK_REAL random_eddies_spectral_projector_lambda "Relative amplitudes of the solenoidal and compressional components"
+{
+    0:1 :: "Any number between 0 (purelly compressive initial velocity) and 1 (solenoidal initial velocity)"
+} 1.0
+
+REAL random_eddies_strength "Amplitude of the random eddies initial data"
+{
+    (0:* :: "Any positive number"
+} 5
+
+INT random_eddies_tracer_wavenumber[10] "Wavenumber for the tracer ID in the random-eddies case"
+{
+    0:* :: "Any non-negative integer number"
+} 0
+
+REAL vortex_gamma "Adiabatic index (must match the one of the EOS)"
+{
+    (1:*) :: "Any value that makes sense"
+} 1.3333333333333333
+
+REAL vortex_eps_inf "Specific internal energy at infinity"
+{
+    (0:* :: "Any positive value"
+} 0.1
+
+REAL vortex_cutoff_radius "Cutoff radius of the vortex"
+{
+    0     :: "No cutoff"
+    (0:*) :: "Exponential cutoff at this radius"
+} 0.0

@@ -1,0 +1,89 @@
+# Schedule definitions for thorn THC_InitialData
+
+###############################################################################
+# Initialization
+###############################################################################
+SCHEDULE THC_ID_Init AT CCTK_STARTUP
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register banner"
+
+SCHEDULE THC_ID_ParamCheck AT CCTK_PARAMCHECK
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Check parameters"
+
+###############################################################################
+# Initial data
+###############################################################################
+if (CCTK_Equals(id_type, "atmosphere")) {
+    SCHEDULE THC_ID_Atmosphere IN HydroBase_Initial
+    {
+        LANG: C
+    } "Atmosphere initial data"
+}
+
+if (CCTK_Equals(id_type, "eddies")) {
+    SCHEDULE THC_ID_Eddies IN HydroBase_Initial
+    {
+        LANG: C
+    } "Eddies initial data"
+}
+
+if (CCTK_Equals(id_type, "explosion")) {
+    SCHEDULE THC_ID_Explosion IN HydroBase_Initial
+    {
+        LANG: C
+    } "Spherical explosion test"
+}
+
+if (CCTK_Equals(id_type, "kelvin-helmholtz")) {
+    SCHEDULE THC_ID_KelvinHelmholtz IN HydroBase_Initial
+    {
+        LANG: C
+    } "KH instability test"
+}
+
+if (CCTK_Equals(id_type, "random")) {
+    SCHEDULE THC_ID_Random IN HydroBase_Initial
+    {
+        LANG: C
+    } "Random initial data"
+}
+
+if (CCTK_Equals(id_type, "random-eddies")) {
+    SCHEDULE THC_ID_RandomEddies IN HydroBase_Initial
+    {
+        LANG: C
+    } "Random eddies initial data"
+}
+
+if (CCTK_Equals(id_type, "shocktube")) {
+    SCHEDULE THC_ID_ShockTube IN HydroBase_Initial
+    {
+        LANG: C
+    } "Shock-tube initial data"
+}
+
+if (CCTK_Equals(id_type, "simple-wave")) {
+    SCHEDULE THC_ID_SimpleWave IN HydroBase_Initial
+    {
+        LANG: C
+    } "Simple-wave initial data"
+}
+
+if (CCTK_Equals(id_type, "static")) {
+    SCHEDULE THC_ID_Static IN HydroBase_Initial
+    {
+        LANG: C
+    } "Static initial data"
+}
+
+if (CCTK_Equals(id_type, "vortex")) {
+    SCHEDULE THC_ID_Vortex IN HydroBase_Initial
+    {
+        LANG: C
+    } "Lyutikov relativistic vortex solution"
+}

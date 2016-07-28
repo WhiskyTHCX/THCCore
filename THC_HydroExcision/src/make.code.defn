@@ -1,0 +1,7 @@
+# Main make.code.defn file for thorn THC_HydroExcision
+
+# Source files in this directory
+SRCS = thc_hydro_excision.c 
+
+# Subdirectories containing source files
+SUBDIRS =

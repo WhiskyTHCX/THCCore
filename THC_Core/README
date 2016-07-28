@@ -1,0 +1,11 @@
+Cactus Code Thorn THC_Core
+Author(s)    : David Radice <david.radice@aei.mpg.de>
+               Wolfgang Kastaun <wolfgang.kastaun@aei.mpg.de>
+               Ian Hawke <I.Hawke@soton.ac.uk>
+Maintainer(s): David Radice <david.radice@aei.mpg.de>
+Licence      : GPLv3
+--------------------------------------------------------------------------
+
+1. Purpose
+
+The Templated Hydrodynamics Code core.

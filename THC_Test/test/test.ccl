@@ -1,0 +1,9 @@
+TEST densgain_amr
+{
+    NPROCS 2
+}
+
+TEST densgain
+{
+    NPROCS 1
+}

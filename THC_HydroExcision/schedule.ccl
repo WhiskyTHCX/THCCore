@@ -1,0 +1,12 @@
+# Schedule definitions for thorn THC_HydroExcision
+
+SCHEDULE THC_HE_Init AT CCTK_STARTUP
+{
+    LANG: C
+    OPTIONS: GLOBAL
+} "Register banner"
+
+SCHEDULE THC_HE_SetExcisionMask IN THC_SetExcisionMask
+{
+    LANG: C
+} "Set the excision mask"

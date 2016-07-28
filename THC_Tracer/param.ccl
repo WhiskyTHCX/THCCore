@@ -1,0 +1,43 @@
+# Parameter definitions for thorn THC_Tracer
+
+SHARES: HydroBase
+USES INT timelevels
+
+SHARES: HRSCCore
+USES BOOLEAN refluxing
+
+SHARES: THC_Core
+USES KEYWORD bc_type
+USES KEYWORD eos_type
+USES BOOLEAN verbose
+
+SHARES: MethodOfLines
+USES INT MoL_Num_Evolved_Vars
+USES INT MoL_Num_Constrained_Vars
+USES INT MoL_Num_SaveAndRestore_Vars
+
+RESTRICTED:
+
+# The maximum number of tracers is hard-coded to be 4 in the THC_Tracer and
+# THC_Refluxing thorns
+INT ntracers "Number of tracers to evolve" ACCUMULATOR-BASE=MethodOfLines::MoL_Num_Evolved_Vars
+{
+    0:4 :: "The number of tracers to evolve"
+} 0
+
+RESTRICTED:
+
+CCTK_INT THC_Tracer_MaxNumEvolvedVars "The maximum number of evolved variables used by THC_Tracer" ACCUMULATOR-BASE=MethodOfLines::MoL_Num_Evolved_Vars
+{
+    4 :: ""
+} 4
+
+CCTK_INT THC_Tracer_MaxNumConstrainedVars "The maximum number of constrained variables used by THC_Tracer" ACCUMULATOR-BASE=MethodOfLines::MoL_Num_Constrained_Vars
+{
+    4 :: ""
+} 4
+
+CCTK_INT THC_Tracer_MaxNumSaveAndRestoreVars "The maximum number of save-and-restore variables used by THC_Tracer" ACCUMULATOR-BASE=MethodOfLines::MoL_Num_SaveAndRestore_Vars
+{
+    0 :: "-"
+} 0

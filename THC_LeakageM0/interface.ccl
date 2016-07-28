@@ -1,0 +1,113 @@
+# Interface definition for thorn THC_LeakageM0
+IMPLEMENTS: THC_LeakageM0
+INHERITS: Grid HydroBase SphericalSurface THC_Core THC_LeakageBase
+
+USES INCLUDE: thc_lk_rates.h
+USES INCLUDE: thc_sph_grid.h
+USES INCLUDE: utils.hh
+USES INCLUDE: utils_macro.h
+
+# WeakRates
+CCTK_INT FUNCTION NeutrinoAbsorptionRate( \
+        CCTK_REAL IN rho,\
+        CCTK_REAL IN temp,\
+        CCTK_REAL IN ye,\
+        CCTK_REAL OUT abs_0_nue,\
+        CCTK_REAL OUT abs_0_nua,\
+        CCTK_REAL OUT abs_0_nux,\
+        CCTK_REAL OUT abs_1_nue,\
+        CCTK_REAL OUT abs_1_nua,\
+        CCTK_REAL OUT abs_1_nux)
+USES FUNCTION NeutrinoAbsorptionRate
+
+CCTK_INT FUNCTION NeutrinoDensity( \
+        CCTK_REAL IN rho, \
+        CCTK_REAL IN temp, \
+        CCTK_REAL IN ye, \
+        CCTK_REAL OUT num_nue, \
+        CCTK_REAL OUT num_nua, \
+        CCTK_REAL OUT num_nux, \
+        CCTK_REAL OUT ene_nue, \
+        CCTK_REAL OUT ene_nua, \
+        CCTK_REAL OUT ene_nux)
+USES FUNCTION NeutrinoDensity
+
+CCTK_INT FUNCTION NeutrinoEmission( \
+        CCTK_REAL IN rho,\
+        CCTK_REAL IN temp,\
+        CCTK_REAL IN ye,\
+        CCTK_REAL OUT r_nue,\
+        CCTK_REAL OUT r_nua,\
+        CCTK_REAL OUT r_nux,\
+        CCTK_REAL OUT q_nue,\
+        CCTK_REAL OUT q_nua,\
+        CCTK_REAL OUT q_nux)
+USES FUNCTION NeutrinoEmission
+
+CCTK_INT FUNCTION NeutrinoOpacity( \
+        CCTK_REAL IN rho,\
+        CCTK_REAL IN temp,\
+        CCTK_REAL IN ye,\
+        CCTK_REAL OUT kappa_0_nue,\
+        CCTK_REAL OUT kappa_0_nua,\
+        CCTK_REAL OUT kappa_0_nux,\
+        CCTK_REAL OUT kappa_1_nue,\
+        CCTK_REAL OUT kappa_1_nua,\
+        CCTK_REAL OUT kappa_1_nux)
+USES FUNCTION NeutrinoOpacity
+
+CCTK_REAL FUNCTION AverageBaryonMass()
+USES FUNCTION AverageBaryonMass
+
+CCTK_INT thc_leakage_M0_is_on TYPE=SCALAR TAGS='Checkpoint="yes"'
+
+CCTK_REAL thc_leakage_M0_flux TYPES=SCALAR TAGS='Checkpoint="yes"'
+{
+    thc_M0_nue_num_flux, thc_M0_nua_num_flux, thc_M0_nux_num_flux,
+    thc_M0_nue_ene_flux, thc_M0_nua_ene_flux, thc_M0_nux_ene_flux
+} "Neutrino number and energy fluxes at the outer boundary"
+
+PRIVATE:
+
+CCTK_REAL thc_leakage_vars TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"'
+{
+    thc_M0_x, thc_M0_y, thc_M0_z,
+    thc_M0_alp, thc_M0_betax, thc_M0_betay, thc_M0_betaz,
+    thc_M0_gxx, thc_M0_gxy, thc_M0_gxz, thc_M0_gyy, thc_M0_gyz, thc_M0_gzz,
+    thc_M0_rho, thc_M0_zvecx, thc_M0_zvecy, thc_M0_zvecz, thc_M0_temp, thc_M0_Y_e,
+    thc_M0_optd_0_nue, thc_M0_optd_0_nua, thc_M0_optd_0_nux,
+    thc_M0_optd_1_nue, thc_M0_optd_1_nua, thc_M0_optd_1_nux,
+    thc_M0_R_nue, thc_M0_R_nua, thc_M0_R_nux,
+    thc_M0_Q_nue, thc_M0_Q_nua, thc_M0_Q_nux
+} "Leakage quantities on the spherical grid"
+
+CCTK_REAL thc_leakage_M0_vars TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"'
+{
+    thc_M0_abs_nue, thc_M0_abs_nua,
+    thc_M0_ndens_nue, thc_M0_ndens_nua, thc_M0_ndens_nux,
+    thc_M0_eave_nue, thc_M0_eave_nua, thc_M0_eave_nux,
+    thc_M0_abs_number, thc_M0_abs_energy
+} "Variables used when evolving neutrino number and energy with the M0 scheme"
+
+CCTK_REAL thc_M0_flux_fac TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="no"' "Flux factor (kr/kt)"
+
+CCTK_REAL thc_leakage_M0_evol TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"'
+{
+    thc_M0_N_nue, thc_M0_N_nua, thc_M0_N_nux, thc_M0_E_nue, thc_M0_E_nua, thc_M0_E_nux
+} "Evolved neutrino number and energy with the M0 scheme"
+
+# This plays the role of thc_leakage_M0_evol_p which we do not use to avoid
+# Cactus timelevel rotation
+CCTK_REAL thc_leakage_M0_evol_old TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"'
+{
+    thc_M0_N_nue_old, thc_M0_N_nua_old, thc_M0_N_nux_old,
+    thc_M0_E_nue_old, thc_M0_E_nua_old, thc_M0_E_nux_old
+} "Evolved neutrino number and energy with the M0 scheme"
+
+CCTK_INT thc_M0_mask TYPE=ARRAY DIM=2 SIZE=nrad,nray \
+    DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"' "M0 mask (used for the excision)"

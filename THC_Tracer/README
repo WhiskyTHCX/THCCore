@@ -1,0 +1,9 @@
+Cactus Code Thorn THC_Tracer
+Author(s)    : David Radice <david.radice@aei.mpg.de>
+Maintainer(s): David Radice <david.radice@aei.mpg.de>
+Licence      : GPLv3
+--------------------------------------------------------------------------
+
+1. Purpose
+
+Passive scalar advection module for the Templated Hydrodynamics Code
