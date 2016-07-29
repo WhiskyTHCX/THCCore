@@ -76,15 +76,15 @@ void THC_LK_UpdateOpticalDepth(CCTK_ARGUMENTS) {
                     }
                     CCTK_REAL const delta[3] = {ni*dx, nj*dy, nk*dz};
                     CCTK_REAL const metric[9] = {
-                        0.5*(gxx[ijk] + gxx[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gxy[ijk] + gxy[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gxz[ijk] + gxz[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gxy[ijk] + gxy[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gyy[ijk] + gyy[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gyz[ijk] + gyz[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gxz[ijk] + gxz[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gyz[ijk] + gyz[ijk + ni*oi + nj*ok + nk*ok]),
-                        0.5*(gzz[ijk] + gzz[ijk + ni*oi + nj*ok + nk*ok])
+                        0.5*(gxx[ijk] + gxx[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gxy[ijk] + gxy[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gxz[ijk] + gxz[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gxy[ijk] + gxy[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gyy[ijk] + gyy[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gyz[ijk] + gyz[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gxz[ijk] + gxz[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gyz[ijk] + gyz[ijk + ni*oi + nj*oj + nk*ok]),
+                        0.5*(gzz[ijk] + gzz[ijk + ni*oi + nj*oj + nk*ok])
                     };
                     CCTK_REAL dl2 = 0;
                     for(int i = 0; i < 3; ++i)
