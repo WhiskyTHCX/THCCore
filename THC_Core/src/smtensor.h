@@ -1,3 +1,7 @@
+/*! \file smtensor.h
+ *  \author Wolfgang Kastaun
+ */
+
 #ifndef SMTENSOR_H
 #define SMTENSOR_H
 
