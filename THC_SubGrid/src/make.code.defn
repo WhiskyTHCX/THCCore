@@ -5,8 +5,7 @@ SRCS = thc_sg_grsource.cc \
        thc_sg_rhs.cc \
        thc_sg_tmunu.cc \
        thc_sg_turbstress.cc \
-       thc_sg_turbvisc.cc \
-       thc_sg_veldens.cc
+       thc_sg_turbvisc.cc
 
 # Subdirectories containing source files
 SUBDIRS =

@@ -22,6 +22,7 @@
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
+#include "finite_difference.h"
 #include "utils.hh"
 
 #define SQ(X) ((X)*(X))
@@ -52,11 +53,11 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
     // Slicing geometry
     tensor::slicing_geometry_const geom(alp, betax, betay, betaz, gxx, gxy, gxz,
             gyy, gyz, gzz, kxx, kxy, kxz, kyy, kyz, kzz, volform);
-    // Densitized velocity, contravariant
+    // Three velocity, contravariant
     tensor::generic<CCTK_REAL *, 3, 1> v_u;
-    v_u[0] = &veldens[0*gfsiz];
-    v_u[1] = &veldens[1*gfsiz];
-    v_u[2] = &veldens[2*gfsiz];
+    v_u[0] = &vel[0*gfsiz];
+    v_u[1] = &vel[1*gfsiz];
+    v_u[2] = &vel[2*gfsiz];
     // Subgrid stress tensor, covariant, undensitized
     tensor::symmetric2<CCTK_REAL *, 3, 2> tau_dd;
     tau_dd[0] = tau_xx;
@@ -72,8 +73,34 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
                 j, cctk_nghostzones[1], cctk_lsh[1] - cctk_nghostzones[1],
                 i, cctk_nghostzones[0], cctk_lsh[0] - cctk_nghostzones[0]) {
             int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+            // Geometry on the slice
             tensor::metric<3> g_dd;
             geom.get_metric(ijk, &g_dd);
+            tensor::inv_metric<3> g_uu;
+            geom.get_inv_metric(ijk, &g_uu);
+
+            // Metric derivatives
+            utils::tensor::symmetric2<CCTK_REAL, 3, 3> dg_ddd;
+            for(int a = 0; a < 3; ++a)
+            for(int b = 0; b < 3; ++b)
+            for(int c = b; c < 3; ++c) {
+                CCTK_REAL const * gbc = geom.get_space_metric_comp(b, c);
+                dg_ddd(a,b,c) = 0.5 * idelta[a] *
+                    cdiff_1(cctkGH, gbc, i, j, k, a, fd_order);
+            }
+
+            // Christoffel symbols
+            utils::tensor::symmetric2<CCTK_REAL, 3, 3> Gamma_udd;
+            for(int a = 0; a < 3; ++a)
+            for(int b = 0; b < 3; ++b)
+            for(int c = b; c < 3; ++c) {
+                Gamma_udd(a,b,c) = 0.0;
+                for(int d = 0; d < 3; ++d) {
+                    Gamma_udd(a,b,c) += 0.5 * g_uu(a,d) *
+                        (dg_ddd(c,d,b) + dg_ddd(b,c,d) - dg_ddd(d,b,c));
+                }
+            }
 
             // Gradient of the velocity, mixed components
             tensor::generic<CCTK_REAL, 3, 2> Dv_du;
@@ -81,6 +108,9 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
             for(int b = 0; b < 3; ++b) {
                 Dv_du(a,b) = 0.5 * idelta[a] *
                     (v_u(b)[ijk + stride[a]] - v_u(b)[ijk - stride[a]]);
+                for(int c = 0; c < 3; ++c) {
+                    Dv_du(a,b) += Gamma_udd(b,a,c) * v_u(c)[ijk];
+                }
             }
 
             // Trace of the gradient of the velocity
@@ -97,7 +127,7 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
                     tau_dd(a,b)[ijk] += 0.5*(
                         g_dd(c,b)*Dv_du(a,c) + g_dd(a,c)*Dv_du(b,c));
                 }
-                tau_dd(a,b)[ijk] *= (-2.0 * nu_turb[ijk] / volform[ijk]);
+                tau_dd(a,b)[ijk] *= (-2.0 * nu_turb[ijk]);
                 tau_dd(a,b)[ijk] *= (rho[ijk] * (1.0 + eps[ijk]) +
                             press[ijk]) * SQ(w_lorentz[ijk]);
                 assert(std::isfinite(tau_dd(a,b)[ijk]));

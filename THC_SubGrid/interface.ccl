@@ -15,8 +15,6 @@ CCTK_REAL turb_stress TYPE=GF TAGS='ProlongationParameter="TmunuBase::prolongati
     tau_xx, tau_xy, tau_xz, tau_yy, tau_yz, tau_zz
 } "Reynolds stress tensor"
 
-CCTK_REAL veldens[3] TYPE=GF TAGS='ProlongationParameter="TmunuBase::prolongation_type" TensorTypeAlias="U" TensorWeight=+1.0 Interpolator="matter"' "Densitized three velocity"
-
 PRIVATE:
 
 CCTK_REAL scratch[9] TYPE=GF TAGS='Prolongation="None"' "Scratch space"

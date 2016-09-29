@@ -112,7 +112,7 @@ extern "C" void THC_SG_GRSource(CCTK_ARGUMENTS) {
             for(int a = 0; a < 3; ++a)
             for(int b = 0; b < 3; ++b)
             for(int c = 0; c < 3; ++c) {
-                dot_S_d(a)[ijk] += vol4 * tau_uu(b,c) * dg_ddd(a,b,c);
+                dot_S_d(a)[ijk] += 0.5 * vol4 * tau_uu(b,c) * dg_ddd(a,b,c);
             }
         } UTILS_ENDLOOP3(thc_sg_grsource);
     }
