@@ -111,7 +111,7 @@ extern "C" void THC_SG_RHS(CCTK_ARGUMENTS) {
                 for(int b = 0; b < 3; ++b)
                 for(int c = b; c < 3; ++c) {
                     CCTK_REAL const * gbc = geom.get_space_metric_comp(b, c);
-                    dg_ddd(a,b,c) = 0.5 * idelta[a] *
+                    dg_ddd(a,b,c) = idelta[a] *
                         cdiff_1(cctkGH, gbc, i, j, k, a, fd_order);
                 }
 
