@@ -86,8 +86,7 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
             for(int b = 0; b < 3; ++b)
             for(int c = b; c < 3; ++c) {
                 CCTK_REAL const * gbc = geom.get_space_metric_comp(b, c);
-                dg_ddd(a,b,c) = idelta[a] *
-                    cdiff_1(cctkGH, gbc, i, j, k, a, fd_order);
+                dg_ddd(a,b,c) = idelta[a]*cdiff_1(cctkGH, gbc, i, j, k, a, 2);
             }
 
             // Christoffel symbols
@@ -106,8 +105,7 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
             tensor::generic<CCTK_REAL, 3, 2> Dv_du;
             for(int a = 0; a < 3; ++a)
             for(int b = 0; b < 3; ++b) {
-                Dv_du(a,b) = 0.5 * idelta[a] *
-                    (v_u(b)[ijk + stride[a]] - v_u(b)[ijk - stride[a]]);
+                Dv_du(a,b) = idelta[a]*cdiff_1(cctkGH, v_u(b), i, j, k, a, 2);
                 for(int c = 0; c < 3; ++c) {
                     Dv_du(a,b) += Gamma_udd(b,a,c) * v_u(c)[ijk];
                 }
