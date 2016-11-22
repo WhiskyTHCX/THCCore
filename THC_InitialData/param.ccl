@@ -133,6 +133,11 @@ REAL static_velz "Add a constant velocity in the initial data: x-component"
     (-1:1) :: "Any number that makes sense"
 } 0.0
 
+REAL static_eps "Initial specific internal energy"
+{
+    (0:) :: "Any positive number"
+} 1.0e-2
+
 REAL vortex_gamma "Adiabatic index (must match the one of the EOS)"
 {
     (1:*) :: "Any value that makes sense"

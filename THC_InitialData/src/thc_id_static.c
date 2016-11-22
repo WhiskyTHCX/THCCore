@@ -49,7 +49,7 @@ void THC_ID_Static(CCTK_ARGUMENTS) {
             velx[ijk] = static_velx;
             vely[ijk] = static_vely;
             velz[ijk] = static_velz;
-            eps[ijk]  = 1.0e-2;
+            eps[ijk]  = static_eps;
 
             for(int e = 0; e < ntracers; ++e) {
                 tracer[ijk + e*siz] = 0;
