@@ -67,6 +67,10 @@ BOOLEAN use_reduced_opacity "Reduce the absorption opacity at high-optical depth
 {
 } "no"
 
+BOOLEAN use_enedep_opacity "Rescale the absorption opacity according to the local neutrino energy"
+{
+} "no"
+
 BOOLEAN excision "Enable excision for the M0 scheme" STEERABLE=always
 {
 } "no"

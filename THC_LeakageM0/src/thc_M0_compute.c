@@ -31,6 +31,8 @@
 #include "thc_lk_rates.h"
 #include "thc_M0_kernel.h"
 
+#define SQ(X) ((X)*(X))
+
 void THC_M0_Compute(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
@@ -251,6 +253,17 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
                     assert(isfinite(abs_1_nue));
                     assert(isfinite(abs_1_nua));
                     assert(isfinite(abs_1_nux));
+
+                    /* Scale neutrino opacity with the energy */
+                    if(use_enedep_opacity) {
+                        CCTK_REAL const abs_fac_nue =
+                            (num_nue/ene_nue)*(thc_M0_E_nue[ijk]/chi[irad]);
+                        thc_M0_abs_nue[ijk] *= SQ(abs_fac_nue);
+
+                        CCTK_REAL const abs_fac_nua =
+                            (num_nua/ene_nua)*(thc_M0_E_nua[ijk]/chi[irad]);
+                        thc_M0_abs_nua[ijk] *= SQ(abs_fac_nua);
+                    }
                 }
             }
 
