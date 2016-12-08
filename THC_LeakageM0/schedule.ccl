@@ -34,7 +34,7 @@ SCHEDULE THC_M0_InitData IN HydroBase_Initial
 {
     LANG: C
     OPTIONS: GLOBAL
-} "Initial data for the neutrino Beam scheme"
+} "Initial data for the neutrino M0 scheme"
 
 if(test_homogeneous_sphere) {
     SCHEDULE THC_M0_TestInitHydro IN HydroBase_Initial
@@ -57,7 +57,7 @@ if(reset_on_recovery) {
     {
         LANG: C
         OPTIONS: GLOBAL
-    } "Initial data for the neutrino Beam scheme"
+    } "Initial data for the neutrino M0 scheme"
 }
 else {
     SCHEDULE THC_M0_RecoverGrid AT CCTK_POST_RECOVER_VARIABLES
@@ -66,7 +66,6 @@ else {
         OPTIONS: GLOBAL
     } "Setup M0 grid"
 }
-
 
 ###############################################################################
 # Transport neutrino on the spherical grid

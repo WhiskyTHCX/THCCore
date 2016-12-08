@@ -41,8 +41,8 @@ CCTK_INT compute_every "Compute effective absorption every so many iterations"
     1:* :: "Any positive number"
 } 1
 
-# This is useful for restarting a run without M0 with M0
-BOOLEAN reset_on_recovery "Reset M0 variables at recovery" STEERABLE=recover
+# NOTE: this is useful for starting a run from a leakage simulation
+BOOLEAN reset_on_recovery "Reset all the M0 variables at recovery" STEERABLE=recover
 {
 } "no"
 

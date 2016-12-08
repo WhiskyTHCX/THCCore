@@ -10,7 +10,7 @@ USES INT timelevels
 
 RESTRICTED:
 
-KEYWORD neu_abs_type "Method to be used to compute the neutrino absorption rates"
+KEYWORD neu_abs_type "Method to be used to compute the neutrino absorption rates" STEERABLE=recover
 {
     "None" :: "No absorption"
 } "None"
