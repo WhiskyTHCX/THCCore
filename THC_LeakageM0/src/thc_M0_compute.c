@@ -256,13 +256,23 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
 
                     /* Scale neutrino opacity with the energy */
                     if(use_enedep_opacity) {
-                        CCTK_REAL const abs_fac_nue =
-                            (num_nue/ene_nue)*(thc_M0_E_nue[ijk]/chi[irad]);
+                        CCTK_REAL const abs_fac_nue = (ene_nue > 0 ?
+                            (num_nue/ene_nue)*(thc_M0_E_nue[ijk]/chi[irad]) : 1);
+                        assert(isfinite(abs_fac_nue));
                         thc_M0_abs_nue[ijk] *= SQ(abs_fac_nue);
 
-                        CCTK_REAL const abs_fac_nua =
-                            (num_nua/ene_nua)*(thc_M0_E_nua[ijk]/chi[irad]);
+                        CCTK_REAL const abs_fac_nua = (ene_nua > 0 ?
+                            (num_nua/ene_nua)*(thc_M0_E_nua[ijk]/chi[irad]) : 1);
+                        assert(isfinite(abs_fac_nua));
                         thc_M0_abs_nua[ijk] *= SQ(abs_fac_nua);
+                    }
+                    if(use_reduced_opacity) {
+                        if(thc_M0_optd_0_nue[ijk] > FLT_EPSILON) {
+                            thc_M0_abs_nue[ijk] *= exp(-thc_M0_optd_0_nue[ijk]);
+                        }
+                        if(thc_M0_optd_0_nua[ijk] > FLT_EPSILON) {
+                            thc_M0_abs_nua[ijk] *= exp(-thc_M0_optd_0_nua[ijk]);
+                        }
                     }
                 }
             }
@@ -273,14 +283,6 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
                 theta[irad] = kr[irad]/kt[irad];
                 eta[irad] = thc_M0_R_nue[ijk]*sqrt_det_g[irad];
                 mu[irad] = thc_M0_abs_nue[ijk]/kt[irad];
-            }
-            if(use_reduced_opacity) {
-                for(int irad = 0; irad < nrad; ++irad) {
-                    int const ijk = THC_M0_INDEX(group_data, irad, iray);
-                    if(thc_M0_optd_0_nue[ijk] > FLT_EPSILON) {
-                        mu[irad] *= exp(-thc_M0_optd_0_nue[ijk]);
-                    }
-                }
             }
             thc_M0_evol_density(dt, &thc_M0_mask[offset], theta, eta, mu,
                     &thc_M0_N_nue_old[offset], &thc_M0_N_nue[offset]);
@@ -294,14 +296,6 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
                 int const ijk = THC_M0_INDEX(group_data, irad, iray);
                 eta[irad] = thc_M0_R_nua[ijk]*sqrt_det_g[irad];
                 mu[irad] = thc_M0_abs_nua[ijk]/kt[irad];
-            }
-            if(use_reduced_opacity) {
-                for(int irad = 0; irad < nrad; ++irad) {
-                    int const ijk = THC_M0_INDEX(group_data, irad, iray);
-                    if(thc_M0_optd_0_nua[ijk] > FLT_EPSILON) {
-                        mu[irad] *= exp(-thc_M0_optd_0_nua[ijk]);
-                    }
-                }
             }
             thc_M0_evol_density(dt, &thc_M0_mask[offset], theta, eta, mu,
                     &thc_M0_N_nua_old[offset], &thc_M0_N_nua[offset]);
@@ -376,14 +370,6 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
 
                 CCTK_REAL eff_abs_nue = thc_M0_abs_nue[ijk];
                 CCTK_REAL eff_abs_nua = thc_M0_abs_nua[ijk];
-                if(use_reduced_opacity) {
-                    if(thc_M0_optd_0_nue[ijk] > FLT_EPSILON) {
-                        eff_abs_nue *= exp(-thc_M0_optd_0_nue[ijk]);
-                    }
-                    if(thc_M0_optd_0_nua[ijk] > FLT_EPSILON) {
-                        eff_abs_nua *= exp(-thc_M0_optd_0_nua[ijk]);
-                    }
-                }
 
                 thc_M0_abs_number[ijk] = mb*(
                     eff_abs_nue * thc_M0_ndens_nue[ijk] -
