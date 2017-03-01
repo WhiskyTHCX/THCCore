@@ -61,7 +61,7 @@ USES FUNCTION AverageBaryonMass
 
 CCTK_INT thc_leakage_M0_is_on TYPE=SCALAR TAGS='Checkpoint="yes"'
 
-CCTK_REAL thc_leakage_M0_flux TYPES=SCALAR TAGS='Checkpoint="yes"'
+CCTK_REAL thc_leakage_M0_flux TYPE=SCALAR TAGS='Checkpoint="yes"'
 {
     thc_M0_nue_num_flux, thc_M0_nua_num_flux, thc_M0_nux_num_flux,
     thc_M0_nue_ene_flux, thc_M0_nua_ene_flux, thc_M0_nux_ene_flux
