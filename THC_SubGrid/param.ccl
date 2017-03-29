@@ -15,19 +15,19 @@ USES BOOLEAN verbose
 
 RESTRICTED:
 
-KEYWORD model "Subgrid-scale model to use"
+KEYWORD model "Subgrid-scale model to use" STEERABLE=recover
 {
     "viscous" :: "tau_{ij} = - 2 \nu_t S_{ij}"
 } "viscous"
 
-KEYWORD viscosity "Form of the turbulent viscosity to use"
+KEYWORD viscosity "Form of the turbulent viscosity to use" STEERABLE=recover
 {
     "alpha" :: "alpha viscosity: \nu_t = l_mix c_s"
     "const" :: "constant viscosity: \nu_t = l_mix c_light"
 } "alpha"
 
 # Note: numerical stability requres \nu_T ~< 1/4 (dx/dt) dx
-REAL lmix "Mixing length parameter (in code units)"
+REAL lmix "Mixing length parameter (in code units)" STEERABLE=recover
 {
     0:* :: "Any non-negative value"
 } 0.0
