@@ -39,11 +39,6 @@ extern "C" void THC_SG_CalcSubgridTensor(CCTK_ARGUMENTS) {
 
     // Grid data
     int const gfsiz = UTILS_GFSIZE(cctkGH);
-    int const stride[3] = {
-        CCTK_GFINDEX3D(cctkGH, 1, 0, 0) - CCTK_GFINDEX3D(cctkGH, 0, 0, 0),
-        CCTK_GFINDEX3D(cctkGH, 0, 1, 0) - CCTK_GFINDEX3D(cctkGH, 0, 0, 0),
-        CCTK_GFINDEX3D(cctkGH, 0, 0, 1) - CCTK_GFINDEX3D(cctkGH, 0, 0, 0),
-    };
     CCTK_REAL const idelta[3] = {
         1.0/CCTK_DELTA_SPACE(0),
         1.0/CCTK_DELTA_SPACE(1),
