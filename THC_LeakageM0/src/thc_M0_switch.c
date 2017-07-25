@@ -26,7 +26,7 @@ void THC_M0_Switch(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
 
-    if(cctk_iteration % compute_every != 0) {
+    if((cctk_iteration-1) % compute_every != 0) {
         return;
     }
     if(verbose) {

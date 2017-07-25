@@ -38,7 +38,7 @@ void THC_M0_InterpToSph(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
 
-    if(cctk_iteration % compute_every != 0) {
+    if((cctk_iteration-1) % compute_every != 0) {
         return;
     }
     if(!*thc_leakage_M0_is_on) {
@@ -165,7 +165,7 @@ void THC_M0_InterpToCart(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
 
-    if(cctk_iteration % compute_every != 0) {
+    if((cctk_iteration-1) % compute_every != 0) {
         return;
     }
     if(!*thc_leakage_M0_is_on) {
