@@ -93,6 +93,7 @@ class Euler: public EulerBase<Euler> {
             CCTK_REAL chi, kappa;
             eos.press_derivs_from_rho_eps_ye(press, chi, kappa, rho,
                     eps, fake_Y_e, status);
+#ifdef THC_DEBUG
             if(status.failed) {
                 std::ostringstream ss;
                 this->print_location(observer, ss);
@@ -100,6 +101,7 @@ class Euler: public EulerBase<Euler> {
 #pragma omp critical
                 CCTK_ERROR(status.err_msg.c_str());
             }
+#endif
 
             CCTK_REAL const h = 1 + eps + press/rho;
             csound = std::sqrt((chi + press/SQ(rho)*kappa) / h);
@@ -282,12 +284,14 @@ class Euler: public EulerBase<Euler> {
                 CCTK_REAL chi, kappa;
                 eos.press_derivs_from_rho_eps_ye(press, chi, kappa, rho,
                         eps, fake_Y_e, status);
+#ifdef THC_DEBUG
                 if(status.failed) {
                     this->print_location(observer, ss);
                     Printer::print_err(ss.str());
 #pragma omp critical
                     CCTK_ERROR(status.err_msg.c_str());
                 }
+#endif
 
                 CCTK_REAL const h = 1 + eps + press/rho;
                 csound = std::sqrt((chi + press/SQ(rho)*kappa) / h);
@@ -412,6 +416,7 @@ class Euler: public EulerBase<Euler> {
             CCTK_REAL chi, kappa;
             eos.press_derivs_from_rho_eps_ye(press, chi, kappa, rho,
                     eps, fake_Y_e, status);
+#ifdef THC_DEBUG
             if(status.failed) {
                 std::ostringstream ss;
                 this->print_location(observer, ss);
@@ -419,6 +424,7 @@ class Euler: public EulerBase<Euler> {
 #pragma omp critical
                 CCTK_ERROR(status.err_msg.c_str());
             }
+#endif
 
             CCTK_REAL const h = 1 + eps + press/rho;
 
@@ -471,11 +477,13 @@ class Euler: public EulerBase<Euler> {
             CCTK_REAL const c_3 = 1/(h*xi);
             CCTK_REAL const c_p = - h*h/Delta;
 
+#if THC_DEBUG
             THC_CLAWS_CHECK(c_m);
             THC_CLAWS_CHECK(c_1);
             THC_CLAWS_CHECK(c_2);
             THC_CLAWS_CHECK(c_3);
             THC_CLAWS_CHECK(c_p);
+#endif
 
             ///////////////////////////////////////////////////////////////////
             // Left eigenvectors

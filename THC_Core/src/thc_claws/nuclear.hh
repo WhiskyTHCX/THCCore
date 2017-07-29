@@ -293,12 +293,14 @@ class Euler: public EulerBase<Euler> {
                 // Check that the variables are in their allowed ranges
                 whizza::eos_thermal_impl const & ieos = eos.implementation();
                 ieos.check_rho_eps_ye(rho, eps, Y_e, status);
+#if THC_DEBUG
                 if(status.failed) {
                     this->print_location(observer, ss);
                     Printer::print_err(ss.str());
 #pragma omp critical
                     CCTK_ERROR(status.err_msg.c_str());
                 }
+#endif
 
                 // Compute other thermodynamical quantities
                 temperature = ieos.temp_from_valid_rho_eps_ye(rho, eps, Y_e);
