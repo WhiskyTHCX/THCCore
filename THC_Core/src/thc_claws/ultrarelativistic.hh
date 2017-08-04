@@ -97,6 +97,18 @@ class Euler: public EulerBase<Euler> {
                 return;
             }
 
+            if(c2a_fix_nans) {
+                if(!ISFINITE(sconx) || !ISFINITE(scony) || !ISFINITE(sconz) ||
+                   !ISFINITE(tau)) {
+                    UTILS_BITMASK_SET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                    this->set_to_atmosphere(observer);
+                    return;
+                }
+                else {
+                    UTILS_BITMASK_UNSET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                }
+            }
+
             // By setting \eps = 0 we can use the classical expression for the
             // enthalpy, h = 1 + eps + p/rho_b, even in the ultrarelativistic
             // case using rho instead of rho_b

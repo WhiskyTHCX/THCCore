@@ -42,6 +42,7 @@
 #define THC_FLAG_YE_GT_YEMAX              128
 #define THC_FLAG_CSOUND_IS_CRAP           256
 #define THC_FLAG_IS_INSIDE_BH             512
+#define THC_FLAG_NOT_FINITE              1024
 
 namespace thc {
 

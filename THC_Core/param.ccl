@@ -192,6 +192,10 @@ BOOLEAN c2a_kill_on_failure "Kills the simulation if c2a fails" STEERABLE=always
 {
 } "no"
 
+BOOLEAN c2a_fix_nans "Fix NaNs in the c2a by setting points to atmosphere" STEERABLE=always
+{
+} "no"
+
 BOOLEAN c2a_set_to_nan_on_failure "Sets the conservative to NaN if c2a fails" STEERABLE=always
 {
 } "no"

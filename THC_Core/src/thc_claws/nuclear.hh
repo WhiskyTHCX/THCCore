@@ -177,6 +177,19 @@ class Euler: public EulerBase<Euler> {
                 return;
             }
 
+            if(c2a_fix_nans) {
+                if(!ISFINITE(densxn) || !ISFINITE(densxp) ||
+                   !ISFINITE(sconx) || !ISFINITE(scony) || !ISFINITE(sconz) ||
+                   !ISFINITE(tau)) {
+                    UTILS_BITMASK_SET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                    this->set_to_atmosphere(observer);
+                    return;
+                }
+                else {
+                    UTILS_BITMASK_UNSET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                }
+            }
+
 #ifdef THC_DEBUG
             THC_CLAWS_CHECK_ALL;
 #endif
@@ -295,6 +308,10 @@ class Euler: public EulerBase<Euler> {
                 ieos.check_rho_eps_ye(rho, eps, Y_e, status);
 #if THC_DEBUG
                 if(status.failed) {
+                    if(c2a_fix_nans) {
+                        this->set_to_atmosphere(observer);
+                        return;
+                    }
                     this->print_location(observer, ss);
                     Printer::print_err(ss.str());
 #pragma omp critical
@@ -321,6 +338,10 @@ class Euler: public EulerBase<Euler> {
                 }
             }
             catch(std::exception & e) {
+                if(c2a_fix_nans) {
+                    this->set_to_atmosphere(observer);
+                    return;
+                }
                 this->print_location(observer, ss);
                 Printer::print_err(ss.str());
 #pragma omp critical

@@ -176,6 +176,19 @@ class Euler: public EulerBase<Euler> {
                 return;
             }
 
+            if(c2a_fix_nans) {
+                if(!ISFINITE(dens) ||
+                   !ISFINITE(sconx) || !ISFINITE(scony) || !ISFINITE(sconz) ||
+                   !ISFINITE(tau)) {
+                    UTILS_BITMASK_SET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                    this->set_to_atmosphere(observer);
+                    return;
+                }
+                else {
+                    UTILS_BITMASK_UNSET_FLAG(bitmask, THC_FLAG_NOT_FINITE);
+                }
+            }
+
             CCTK_REAL fake_Y_e = 0.5;
             CCTK_REAL fake_dens_Y_e = dens*fake_Y_e;
 
@@ -286,6 +299,10 @@ class Euler: public EulerBase<Euler> {
                         eps, fake_Y_e, status);
 #ifdef THC_DEBUG
                 if(status.failed) {
+                    if(c2a_fix_nans) {
+                        this->set_to_atmosphere(observer);
+                        return;
+                    }
                     this->print_location(observer, ss);
                     Printer::print_err(ss.str());
 #pragma omp critical
@@ -306,6 +323,10 @@ class Euler: public EulerBase<Euler> {
                 }
             }
             catch(std::exception & e) {
+                if(c2a_fix_nans) {
+                    this->set_to_atmosphere(observer);
+                    return;
+                }
                 this->print_location(observer, ss);
                 Printer::print_err(ss.str());
 #pragma omp critical
