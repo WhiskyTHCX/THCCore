@@ -73,4 +73,6 @@ void THC_M0_InitData(CCTK_ARGUMENTS) {
     memset(thc_M0_abs_energy, 0, lsiz*sizeof(CCTK_REAL));
 
     memset(thc_M0_mask, 0, lsiz*sizeof(CCTK_INT));
+
+    *thc_leakage_M0_time = cctk_time;
 }

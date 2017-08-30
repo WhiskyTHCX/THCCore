@@ -111,3 +111,5 @@ CCTK_REAL thc_leakage_M0_evol_old TYPE=ARRAY DIM=2 SIZE=nrad,nray \
 
 CCTK_INT thc_M0_mask TYPE=ARRAY DIM=2 SIZE=nrad,nray \
     DISTRIB=DEFAULT TAGS='no_split_directions={0} Checkpoint="yes"' "M0 mask (used for the excision)"
+
+CCTK_REAL thc_leakage_M0_time TYPE=SCALAR TAGS='Checkpoint="yes"' "Current physical time"

@@ -56,14 +56,21 @@ void THC_M0_Switch(CCTK_ARGUMENTS) {
         *thc_leakage_M0_is_on = true;
     }
 
-    if((!thc_leakage_M0_was_on && *thc_leakage_M0_is_on) || verbose) {
+    if((!thc_leakage_M0_was_on && *thc_leakage_M0_is_on)) {
+        *thc_leakage_M0_time = cctk_time;
         CCTK_INFO("THC_M0_Switch: leakage is on");
     }
-    else if((thc_leakage_M0_was_on && !*thc_leakage_M0_is_on) || verbose) {
+    else if(thc_leakage_M0_was_on && !*thc_leakage_M0_is_on) {
+        /* Cleanup everything if we are switching the M0 off */
+        THC_M0_InitData(CCTK_PASS_CTOC);
         CCTK_INFO("THC_M0_Switch: leakage is off");
-        if(thc_leakage_M0_was_on && !*thc_leakage_M0_is_on) {
-            /* Cleanup everything if we are switching the M0 off */
-            THC_M0_InitData(CCTK_PASS_CTOC);
+    }
+    else if(verbose) {
+        if(*thc_leakage_M0_is_on) {
+            CCTK_INFO("THC_M0_Switch: leakage is on");
+        }
+        else {
+            CCTK_INFO("THC_M0_Switch: leakage is off");
         }
     }
 }

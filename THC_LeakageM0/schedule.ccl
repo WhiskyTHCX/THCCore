@@ -8,6 +8,7 @@ STORAGE: thc_leakage_M0_vars
 STORAGE: thc_M0_flux_fac
 STORAGE: thc_leakage_M0_evol, thc_leakage_M0_evol_old
 STORAGE: thc_M0_mask
+STORAGE: thc_leakage_M0_time
 
 ###############################################################################
 # Initialization

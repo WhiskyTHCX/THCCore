@@ -48,7 +48,8 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
         CCTK_INFO("THC_M0_Compute");
     }
 
-    CCTK_REAL const dt = CCTK_DELTA_TIME * compute_every;
+    CCTK_REAL const dt = cctk_time - (*thc_leakage_M0_time);
+    assert(dt >= 0);
     CCTK_REAL const dtheta = thc_sph_grid_get_dtheta(M0Grid);
     CCTK_REAL const dphi = thc_sph_grid_get_dphi(M0Grid);
 
@@ -422,4 +423,6 @@ void THC_M0_Compute(CCTK_ARGUMENTS) {
             MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD); assert(!ierr);
     ierr = MPI_Allreduce(&my_M0_nux_ene_flux, thc_M0_nux_ene_flux, 1,
             MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD); assert(!ierr);
+
+    *thc_leakage_M0_time = cctk_time;
 }
