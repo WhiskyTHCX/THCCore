@@ -165,10 +165,11 @@ void THC_M0_InterpToCart(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
 
-    if((cctk_iteration-1) % compute_every != 0) {
+    if(!*thc_leakage_M0_is_on) {
+        THC_LK_NoAbsorption(CCTK_PASS_CTOC);
         return;
     }
-    if(!*thc_leakage_M0_is_on) {
+    if((cctk_iteration-1) % compute_every != 0) {
         return;
     }
 

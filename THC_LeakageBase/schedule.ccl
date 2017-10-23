@@ -115,10 +115,12 @@ SCHEDULE GROUP THC_LK_CalcNeuAbsorptionGroup AT CCTK_EVOL AFTER MoL_Evolution
 {
 } "This is where the neutrino absorption/heating should be computed"
 
-SCHEDULE THC_LK_NoAbsorption AT CCTK_EVOL BEFORE THC_LK_CalcNeuAbsorptionGroup
-{
-    LANG: C
-} "Initializes the neutrino absorption/heating to zero"
+if (CCTK_Equals(neu_abs_type, "None")) {
+    SCHEDULE THC_LK_NoAbsorption AT CCTK_EVOL BEFORE THC_LK_CalcNeuAbsorptionGroup
+    {
+        LANG: C
+    } "Initializes the neutrino absorption/heating to zero"
+}
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
