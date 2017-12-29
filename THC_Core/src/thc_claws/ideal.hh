@@ -42,7 +42,8 @@ class Euler: public EulerBase<Euler> {
             volform = std::sqrt(whizza::determinant(g.lo));
 
             // If we are in the atmosphere we do not need to compute anything
-            if(UTILS_BITMASK_CHECK_FLAG(bitmask, THC_FLAG_ATMOSPHERE)) {
+            if(UTILS_BITMASK_CHECK_FLAG(bitmask, THC_FLAG_ATMOSPHERE) ||
+               rho <  atmosphere::rho*(1.0 + atmosphere::tol)) {
                 this->set_to_atmosphere(observer);
                 return;
             }
