@@ -20,12 +20,12 @@ CCTK_INT num_sph_grids "Number of spherical grids to use for the initial optical
     1:2 :: "Only one or two"
 } 1
 
-CCTK_REAL center_grid1[3] "Center of the first grid [x,y,z]"
+CCTK_REAL center_grid1[3] "Center of the first grid [x,y,z]" STEERABLE=recover
 {
     *:* :: "Any number"
 } 0.0
 
-CCTK_REAL center_grid2[3] "Center of the second grid [x,y,z]"
+CCTK_REAL center_grid2[3] "Center of the second grid [x,y,z]" STEERABLE=recover
 {
     *:* :: "Any number"
 } 0.0
@@ -75,5 +75,10 @@ BOOLEAN store_free_rates "Store the free emission rates into grid functions"
 } "no"
 
 BOOLEAN store_neu_luminosity "Store the neutrino luminosity as computed on the volume"
+{
+} "no"
+
+# NOTE: this is useful for starting a run from a hydro simulation
+BOOLEAN reset_on_recovery "Reset all the LK variables at recovery" STEERABLE=recover
 {
 } "no"
