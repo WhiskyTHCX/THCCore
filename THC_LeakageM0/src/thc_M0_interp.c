@@ -33,6 +33,8 @@
 
 #define MIN(X,Y) ((X)<(Y)?(X):(Y))
 
+void THC_LK_NoAbsorption(CCTK_ARGUMENTS);
+
 /* Interpolate the grid arrays onto the spherical grid */
 void THC_M0_InterpToSph(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
