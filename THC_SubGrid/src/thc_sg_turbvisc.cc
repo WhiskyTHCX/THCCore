@@ -24,6 +24,24 @@
 
 #include "utils.hh"
 
+static CCTK_REAL kiuchi_lmix_fit(
+        CCTK_REAL const rho,
+        CCTK_REAL const stretch = 1.0,
+        CCTK_REAL const ampl = 1.0) {
+    // Fitting coefficients
+    CCTK_REAL const lrho_0 = -8.49697276793;
+    CCTK_REAL const a      = 0.0151145023166;
+    CCTK_REAL const b      = -0.425383267966;
+
+    CCTK_REAL const xi = (std::log10(rho) - lrho_0)/stretch;
+    if(xi < 0) {
+        return 0.0;
+    }
+    else {
+        return a*ampl*xi*std::exp(-std::pow(std::abs(xi*b), 2.5));
+    }
+}
+
 extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
@@ -44,6 +62,22 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
         for(int i = 0; i < siz; ++i) {
             nu_turb[i] = lmix;
             assert(std::isfinite(nu_turb[i]));
+        }
+    }
+    else if(CCTK_Equals(viscosity, "kiuchi")) {
+#pragma omp parallel
+        {
+            UTILS_LOOP3(thc_sg_kiuchi,
+                    k, 0, cctk_lsh[2],
+                    j, 0, cctk_lsh[1],
+                    i, 0, cctk_lsh[0]) {
+                int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+                CCTK_REAL const lmix = kiuchi_lmix_fit(rho[ijk],
+                        kiuchi_stretch, kiuchi_ampl);
+                nu_turb[ijk] = lmix * csound[ijk];
+                assert(std::isfinite(lmix));
+                assert(std::isfinite(nu_turb[ijk]));
+            } UTILS_ENDLOOP3(thc_sg_kiuchi);
         }
     }
     else {

@@ -22,8 +22,9 @@ KEYWORD model "Subgrid-scale model to use" STEERABLE=recover
 
 KEYWORD viscosity "Form of the turbulent viscosity to use" STEERABLE=recover
 {
-    "alpha" :: "alpha viscosity: \nu_t = l_mix c_s"
-    "const" :: "constant viscosity: \nu_t = l_mix c_light"
+    "alpha"  :: "alpha viscosity: \nu_t = l_mix c_s"
+    "const"  :: "constant viscosity: \nu_t = l_mix c_light"
+    "kiuchi" :: "use values fitted from Kiuchi et al. (2017), arXiv:1710.0131"
 } "alpha"
 
 # Note: numerical stability requres \nu_T ~< 1/4 (dx/dt) dx
@@ -31,3 +32,13 @@ REAL lmix "Mixing length parameter (in code units)" STEERABLE=recover
 {
     0:* :: "Any non-negative value"
 } 0.0
+
+REAL kiuchi_stretch "Stretch factor for the profile of lmix as a function of log density" STEERABLE=recover
+{
+    (0:* :: "Any positive value"
+} 1.0
+
+REAL kiuchi_ampl "Scale factor for lmix" STEERABLE=recover
+{
+    0:* :: "Any non-negative value"
+} 1.0
