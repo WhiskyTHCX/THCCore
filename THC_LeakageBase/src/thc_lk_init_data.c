@@ -33,33 +33,53 @@ void THC_LK_InitData(CCTK_ARGUMENTS) {
 
     int gfsiz = UTILS_GFSIZE(cctkGH);
 
-    /* Initialize everything to zero apart from the optical depth that is
-     * initialized in a more complex way */
-    memset(kappa_0_nue,    0, gfsiz*sizeof(CCTK_REAL));
-    memset(kappa_0_nua,    0, gfsiz*sizeof(CCTK_REAL));
-    memset(kappa_0_nux,    0, gfsiz*sizeof(CCTK_REAL));
-    memset(kappa_1_nue,    0, gfsiz*sizeof(CCTK_REAL));
-    memset(kappa_1_nua,    0, gfsiz*sizeof(CCTK_REAL));
+    memset(kappa_0_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(kappa_0_nua, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(kappa_0_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(kappa_1_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(kappa_1_nua, 0, gfsiz*sizeof(CCTK_REAL));
     memset(kappa_1_nux,    0, gfsiz*sizeof(CCTK_REAL));
     if(store_free_rates) {
-        memset(R_free_nue,     0, gfsiz*sizeof(CCTK_REAL));
-        memset(R_free_nua,     0, gfsiz*sizeof(CCTK_REAL));
-        memset(R_free_nux,     0, gfsiz*sizeof(CCTK_REAL));
-        memset(Q_free_nue,     0, gfsiz*sizeof(CCTK_REAL));
-        memset(Q_free_nua,     0, gfsiz*sizeof(CCTK_REAL));
-        memset(Q_free_nux,     0, gfsiz*sizeof(CCTK_REAL));
+        memset(R_free_nue, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(R_free_nua, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(R_free_nux, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(Q_free_nue, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(Q_free_nua, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(Q_free_nux, 0, gfsiz*sizeof(CCTK_REAL));
     }
-    memset(R_eff_nue,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(R_eff_nua,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(R_eff_nux,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(Q_eff_nue,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(Q_eff_nua,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(Q_eff_nux,      0, gfsiz*sizeof(CCTK_REAL));
-    memset(abs_number,     0, gfsiz*sizeof(CCTK_REAL));
-    memset(abs_energy,     0, gfsiz*sizeof(CCTK_REAL));
+    memset(R_eff_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(R_eff_nua, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(R_eff_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(Q_eff_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(Q_eff_nua, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(Q_eff_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(abs_number, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(abs_energy, 0, gfsiz*sizeof(CCTK_REAL));
     if(store_neu_luminosity) {
         memset(luminosity_nue, 0, gfsiz*sizeof(CCTK_REAL));
         memset(luminosity_nua, 0, gfsiz*sizeof(CCTK_REAL));
         memset(luminosity_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    }
+    memset(optd_0_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(optd_0_nua, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(optd_0_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(optd_1_nue, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(optd_1_nua, 0, gfsiz*sizeof(CCTK_REAL));
+    memset(optd_1_nux, 0, gfsiz*sizeof(CCTK_REAL));
+    if(timelevels > 1) {
+        memset(optd_0_nue_p, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(optd_0_nua_p, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(optd_0_nux_p, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(optd_1_nue_p, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(optd_1_nua_p, 0, gfsiz*sizeof(CCTK_REAL));
+        memset(optd_1_nux_p, 0, gfsiz*sizeof(CCTK_REAL));
+        if(timelevels > 2) {
+            memset(optd_0_nue_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+            memset(optd_0_nua_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+            memset(optd_0_nux_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+            memset(optd_1_nue_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+            memset(optd_1_nua_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+            memset(optd_1_nux_p_p, 0, gfsiz*sizeof(CCTK_REAL));
+        }
     }
 }

@@ -45,43 +45,61 @@ SCHEDULE THC_LK_InitData AT CCTK_INITIAL
 # Compute rates, optical depth at the initial data
 ###############################################################################
 if(reset_on_recovery) {
-    SCHEDULE THC_LK_CalcOpticalDepth AT CCTK_POST_RECOVER_VARIABLES
-    {
-        LANG: C
-        OPTIONS: GLOBAL-LATE
-    } "Compute the optical depth on one or more spherical grids"
+    if(CCTK_Equals(init_method, "spherical")) {
+        SCHEDULE THC_LK_CalcOpticalDepth AT CCTK_POST_RECOVER_VARIABLES
+        {
+            LANG: C
+            OPTIONS: GLOBAL-LATE
+        } "Compute the optical depth on one or more spherical grids"
 
-    SCHEDULE THC_LK_InterpOpticalDepth AT CCTK_POST_RECOVER_VARIABLES AFTER THC_LK_CalcOpticalDepth
-    {
-        LANG: C
-        OPTIONS: GLOBAL-LATE LOOP-LOCAL
-        SYNC: thc_leakage_optd
-    } "Interpolates the optical depth to the cartesian grid"
+        SCHEDULE THC_LK_InterpOpticalDepth AT CCTK_POST_RECOVER_VARIABLES AFTER THC_LK_CalcOpticalDepth
+        {
+            LANG: C
+            OPTIONS: GLOBAL-LATE LOOP-LOCAL
+            SYNC: thc_leakage_optd
+        } "Interpolates the optical depth to the cartesian grid"
 
-    SCHEDULE THC_LK_OpticalDepthCleanup AT CCTK_POST_RECOVER_VARIABLES AFTER THC_LK_InterpOpticalDepth
-    {
-        LANG: C
-        OPTIONS: GLOBAL-LATE
-    } "De-allocate temporary memory used to initialize the optical depth"
+        SCHEDULE THC_LK_OpticalDepthCleanup AT CCTK_POST_RECOVER_VARIABLES AFTER THC_LK_InterpOpticalDepth
+        {
+            LANG: C
+            OPTIONS: GLOBAL-LATE
+        } "De-allocate temporary memory used to initialize the optical depth"
+    }
+    if(CCTK_Equals(init_method, "simple")) {
+        SCHEDULE THC_LK_InitOpticalDepthSimple AT CCTK_POST_RECOVER_VARIABLES
+        {
+            LANG: C
+            SYNC: thc_leakage_optd
+        } "Initializes the optical depth using the density"
+    }
 }
 else {
-    SCHEDULE THC_LK_CalcOpticalDepth AT CCTK_POSTINITIAL
-    {
-        LANG: C
-        OPTIONS: GLOBAL-LATE
-    } "Compute the optical depth on one or more spherical grids"
+    if(CCTK_Equals(init_method, "spherical")) {
+        SCHEDULE THC_LK_CalcOpticalDepth AT CCTK_POSTINITIAL
+        {
+            LANG: C
+            OPTIONS: GLOBAL-LATE
+        } "Compute the optical depth on one or more spherical grids"
 
-    SCHEDULE THC_LK_InterpOpticalDepth AT CCTK_POSTPOSTINITIAL
-    {
-        LANG: C
-        SYNC: thc_leakage_optd
-    } "Interpolates the optical depth to the cartesian grid"
+        SCHEDULE THC_LK_InterpOpticalDepth AT CCTK_POSTPOSTINITIAL
+        {
+            LANG: C
+            SYNC: thc_leakage_optd
+        } "Interpolates the optical depth to the cartesian grid"
 
-    SCHEDULE THC_LK_OpticalDepthCleanup AT CCTK_POSTPOSTINITIAL AFTER THC_LK_InterpOpticalDepth
-    {
-        LANG: C
-        OPTIONS: GLOBAL-LATE
-    } "De-allocate temporary memory used to initialize the optical depth"
+        SCHEDULE THC_LK_OpticalDepthCleanup AT CCTK_POSTPOSTINITIAL AFTER THC_LK_InterpOpticalDepth
+        {
+            LANG: C
+            OPTIONS: GLOBAL-LATE
+        } "De-allocate temporary memory used to initialize the optical depth"
+    }
+    if(CCTK_Equals(init_method, "simple")) {
+        SCHEDULE THC_LK_InitOpticalDepthSimple AT CCTK_POSTINITIAL
+        {
+            LANG: C
+            SYNC: thc_leakage_optd
+        } "Initializes the optical depth using the density"
+    }
 }
 ###############################################################################
 

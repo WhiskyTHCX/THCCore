@@ -413,3 +413,53 @@ void THC_LK_OpticalDepthCleanup(CCTK_ARGUMENTS) {
         __optd_data[gidx] = NULL;
     }
 }
+
+void THC_LK_InitOpticalDepthSimple(CCTK_ARGUMENTS) {
+    DECLARE_CCTK_ARGUMENTS
+    DECLARE_CCTK_PARAMETERS
+
+    if(verbose) {
+        CCTK_INFO("THC_LK_InitOpticalDepthSimple");
+    }
+
+    CCTK_REAL * optd_vec[] = {
+        optd_0_nue, optd_0_nua, optd_0_nux,
+        optd_1_nue, optd_1_nua, optd_1_nux
+    };
+    CCTK_REAL * optd_vec_p[] = {
+        optd_0_nue_p, optd_0_nua_p, optd_0_nux_p,
+        optd_1_nue_p, optd_1_nua_p, optd_1_nux_p
+    };
+    CCTK_REAL * optd_vec_p_p[] = {
+        optd_0_nue_p_p, optd_0_nua_p_p, optd_0_nux_p_p,
+        optd_1_nue_p_p, optd_1_nua_p_p, optd_1_nux_p_p
+    };
+
+    /* Initializes the optical depth */
+#pragma omp parallel
+    {
+        UTILS_LOOP3(thc_lk_init_optd_simple,
+                k, 0, cctk_lsh[2],
+                j, 0, cctk_lsh[1],
+                i, 0, cctk_lsh[0]) {
+            int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            CCTK_REAL const tau = rho[ijk]/atmo_rho - 1.0;
+            for(int v = 0; v < 6; ++v) {
+                optd_vec[v][ijk] = tau;
+            }
+        } UTILS_ENDLOOP3(thc_lk_init_optd_simple);
+    }
+
+    /* Copy the optical depth to the previous timelevels */
+    int const gfsiz = cctk_lsh[0]*cctk_lsh[1]*cctk_lsh[2];
+    if(timelevels > 1) {
+        for(int v = 0; v < 6; ++v) {
+            memcpy(optd_vec_p[v], optd_vec[v], gfsiz*sizeof(CCTK_REAL));
+        }
+        if(timelevels > 2) {
+            for(int v = 0; v < 6; ++v) {
+                memcpy(optd_vec_p_p[v], optd_vec[v], gfsiz*sizeof(CCTK_REAL));
+            }
+        }
+    }
+}

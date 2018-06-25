@@ -2,6 +2,7 @@
 
 SHARES: THC_Core
 USES BOOLEAN verbose
+USES REAL atmo_rho
 
 SHARES: HydroBase
 USES KEYWORD evolution_method
@@ -14,6 +15,13 @@ KEYWORD neu_abs_type "Method to be used to compute the neutrino absorption rates
 {
     "None" :: "No absorption"
 } "None"
+
+KEYWORD init_method "Method to use for the initialization of the optical depth"
+{
+    "spherical" :: "Use radial integration on one or two spherical grids"
+    "simple"    :: "Set the optical depth to be a function of density"
+    "zero"      :: "Initial optical depth is zero"
+} "spherical"
 
 CCTK_INT num_sph_grids "Number of spherical grids to use for the initial optical depth calculation"
 {
