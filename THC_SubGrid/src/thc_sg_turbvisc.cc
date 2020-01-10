@@ -42,19 +42,6 @@ static CCTK_REAL kiuchi_lmix_fit(
     }
 }
 
-static CCTK_REAL kiuchi_lapse_cut(
-        CCTK_REAL const alp,
-        CCTK_REAL const alp_cut,
-	CCTK_REAL coeff) {
-    CCTK_REAL const xi = (alp - alp_cut);
-    if(xi < 0) {
-	return 0.0;
-    }
-    else {
-	return coeff;
-    }
-}
-
 extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
@@ -88,8 +75,6 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
                 CCTK_REAL const lmix = kiuchi_lmix_fit(rho[ijk],
                         kiuchi_stretch, kiuchi_ampl);
                 nu_turb[ijk] = lmix * csound[ijk];
-		nu_turb[ijk] = kiuchi_lapse_cut(alp[ijk], 
-			lapse_cut, nu_turb[ijk]);
                 assert(std::isfinite(lmix));
                 assert(std::isfinite(nu_turb[ijk]));
             } UTILS_ENDLOOP3(thc_sg_kiuchi);
@@ -97,5 +82,18 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
     }
     else {
         CCTK_ERROR("Unknown viscosity prescription");
+    }
+
+#pragma omp parallel
+    {
+        UTILS_LOOP3(thc_sg_lapse_cut,
+                k, 0, cctk_lsh[2],
+                j, 0, cctk_lsh[1],
+                i, 0, cctk_lsh[0]) {
+            int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            if (alp[ijk] < lapse_cut) {
+                nu_turb[ijk] = 0.0;
+            }
+        } UTILS_ENDLOOP3(thc_sg_lapse_cut);
     }
 }

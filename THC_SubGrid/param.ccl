@@ -45,5 +45,6 @@ REAL kiuchi_ampl "Scale factor for lmix" STEERABLE=recover
 
 REAL lapse_cut "Value of the lapse under which viscosity it turned off" STEERABLE=recover
 {
-  -1.0:* :: "Any value above -1.0. Negative values mean the viscosity is never turned off"
-} -1.0
+  0.0:*  :: "Any positive value"
+  -1.0   :: "Disabled"
+} 0.3
