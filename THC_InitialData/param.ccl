@@ -14,7 +14,7 @@ SHARES: THC_Core
 USES BOOLEAN verbose
 
 SHARES: THC_Tracer
-USES BOOLEAN ntracers
+USES INT ntracers
 
 PRIVATE:
 
