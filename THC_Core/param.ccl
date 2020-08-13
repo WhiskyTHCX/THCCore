@@ -34,7 +34,7 @@ EXTENDS KEYWORD Y_e_evolution_method "The Ye evolution method"
 
 USES INT hydro_excision
 USES KEYWORD initial_Y_e
-USES KEYWORD prolongation_type
+USES STRING prolongation_type
 USES INT timelevels
 
 SHARES: MethodOfLines
