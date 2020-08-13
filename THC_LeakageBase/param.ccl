@@ -6,7 +6,7 @@ USES REAL atmo_rho
 
 SHARES: HydroBase
 USES KEYWORD evolution_method
-USES KEYWORD prolongation_type
+USES STRING prolongation_type
 USES INT timelevels
 
 RESTRICTED:
