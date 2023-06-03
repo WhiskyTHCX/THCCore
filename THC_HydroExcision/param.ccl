@@ -22,6 +22,12 @@ CCTK_REAL excision_margin "Enlarge/shrink the excision region by the given safet
     (0.0:* :: "Any positive number"
 } 1.0
 
+CCTK_REAL excision_lapse "Excise all region with lapse smaller than this value" STEERABLE=always
+{
+    -1.0 :: "Do not consider the lapse function when excising"
+    0:*  :: "Excise region with lapse smaller than given value"
+} -1.0
+
 PRIVATE:
 
 CCTK_INT enable_hydro_excision "" ACCUMULATOR-BASE=HydroBase::hydro_excision

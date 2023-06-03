@@ -49,6 +49,12 @@ void THC_HE_SetExcisionMask(CCTK_ARGUMENTS) {
                 j, 0, cctk_lsh[1],
                 k, 0, cctk_lsh[2]) {
             int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            hydro_excision_mask[ijk] = 0;
+            /* Excise region with small lapse */
+            if (excision_lapse > 0 && alp[ijk] < excision_lapse) {
+                hydro_excision_mask[ijk] = 1;
+            }
+            /* Excise region within the AH */
             if(sf_active[excision_surface]) {
                 int const sn = excision_surface;
 
@@ -104,9 +110,6 @@ void THC_HE_SetExcisionMask(CCTK_ARGUMENTS) {
                     }
                 }
                 /* End of part adapted from CarpetMask */
-            }
-            else {
-                hydro_excision_mask[ijk] = 0;
             }
         } UTILS_ENDLOOP3(thc_set_excision_mask);
     }
