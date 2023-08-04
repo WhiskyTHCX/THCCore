@@ -1,0 +1,291 @@
+ActiveThorns = "
+ADMBase
+ADMCoupling
+ADMMacros
+Boundary
+Carpet
+CarpetIOASCII
+CarpetIOBasic
+CarpetIOHDF5
+CarpetIOScalar
+CarpetLib
+CarpetReduce
+CarpetSlab
+CartGrid3d
+CoordBase
+CoordGauge
+EOS_Barotropic
+EOS_Thermal
+EOS_Thermal_Hybrid
+GenericFD
+HydroBase
+HRSCCore
+InitBase
+IOUtil
+LoopControl
+ML_ADMConstraints
+MoL
+NaNChecker
+PizzaBase
+PizzaIDBase
+PizzaNumUtils
+PizzaTOV
+ReflectionSymmetry
+Slab
+StaticConformal
+SymBase
+TerminationTrigger
+THC_Core
+THC_Tracer
+Time
+TimerReport
+TmunuBase
+"
+
+Cactus::terminate			= "time"
+Cactus::cctk_final_time		= 10000
+
+TerminationTrigger::max_walltime		= @WALLTIME_HOURS@
+TerminationTrigger::on_remaining_walltime	= 30
+TerminationTrigger::create_termination_file	= "yes"
+TerminationTrigger::termination_from_file	= "yes"
+TerminationTrigger::termination_file		= "../TERMINATE"
+
+TimerReport::output_all_timers_readable		= "yes"
+
+# =============================================================================
+# Grid
+# =============================================================================
+Grid::avoid_origin			= "no"
+Grid::domain			= "full"
+Grid::type			= "coordbase"
+
+ReflectionSymmetry::reflection_x		= "yes"
+ReflectionSymmetry::reflection_y		= "yes"
+ReflectionSymmetry::reflection_z		= "yes"
+ReflectionSymmetry::avoid_origin_x		= "no"
+ReflectionSymmetry::avoid_origin_y		= "no"
+ReflectionSymmetry::avoid_origin_z		= "no"
+
+CoordBase::xmin			= 0
+CoordBase::xmax			= 16
+CoordBase::ymin			= 0
+CoordBase::ymax			= 16
+CoordBase::zmin			= 0
+CoordBase::zmax			= 16
+
+CoordBase::spacing			= "numcells"
+CoordBase::ncells_x			= 80
+CoordBase::ncells_y			= 80
+CoordBase::ncells_z			= 80
+
+CoordBase::boundary_size_x_lower		= 3
+CoordBase::boundary_size_x_upper		= 3
+CoordBase::boundary_shiftout_x_lower		= 1
+CoordBase::boundary_shiftout_x_upper		= 0
+CoordBase::boundary_staggered_x_lower		= 0
+CoordBase::boundary_staggered_x_upper		= 0
+
+CoordBase::boundary_size_y_lower		= 3
+CoordBase::boundary_size_y_upper		= 3
+CoordBase::boundary_shiftout_y_lower		= 1
+CoordBase::boundary_shiftout_y_upper		= 0
+CoordBase::boundary_staggered_y_lower		= 0
+CoordBase::boundary_staggered_y_upper		= 0
+
+CoordBase::boundary_size_z_lower		= 3
+CoordBase::boundary_size_z_upper		= 3
+CoordBase::boundary_shiftout_z_lower		= 1
+CoordBase::boundary_shiftout_z_upper		= 0
+CoordBase::boundary_staggered_z_lower		= 0
+CoordBase::boundary_staggered_z_upper		= 0
+
+Driver::ghost_size			= 3
+Driver::ghost_size_x		= 3
+Driver::ghost_size_y		= 3
+Driver::ghost_size_z		= 3
+
+Carpet::domain_from_coordbase		= "yes"
+
+InitBase::initial_data_setup_method		= "init_all_levels"
+
+Carpet::max_refinement_levels		= 1
+Carpet::prolongation_order_space		= 3
+Carpet::prolongation_order_time		= 2
+Carpet::use_buffer_zones		= "yes"
+Carpet::enable_all_storage		= "no"
+
+Carpet::grid_coordinates_filename		= "grid.carpet"
+
+NaNChecker::check_every		= 100
+NaNChecker::check_vars		= "HydroBase::w_lorentz"
+NaNChecker::action_if_found		= "terminate"
+
+# =============================================================================
+# Time integration
+# =============================================================================
+Carpet::num_integrator_substeps		= 3
+
+MoL::ode_method			= "RK3"
+MoL::MoL_Intermediate_Steps		= 3
+MoL::MoL_Num_Scratch_Levels		= 0
+MoL::verbose			= "register"
+
+HydroBase::timelevels		= 3
+
+Time::timestep_method		= "courant_static"
+Time::dtfac			= 0.125
+
+# =============================================================================
+# Initial data
+# =============================================================================
+ADMBase::initial_data		= "PizzaTOV"
+ADMBase::initial_lapse		= "PizzaTOV"
+ADMBase::initial_shift		= "PizzaTOV"
+ADMBase::initial_dtlapse		= "zero"
+ADMBase::initial_dtshift		= "zero"
+HydroBase::initial_hydro		= "PizzaTOV"
+
+# File describing a one-parametric EOS in Pizza format. Used only for initial data.
+PizzaIDBase::eos_file		= "/home/david_e/Desert/EOS/BU.pizza"
+
+# TOV central rest mass density in kg/m^3
+PizzaTOV::star_crmd			= 7.9056e17
+PizzaTOV::pert_amp			= 0.0
+PizzaTOV::pert_l			= 0
+PizzaTOV::pert_n			= 1
+
+# Geometric unit system for initial data, specified by length unit.
+# use CACTUS units
+PizzaBase::length_unit		= 1476.7161818921163
+
+# =============================================================================
+# Templated hydrodynamics code
+# =============================================================================
+HydroBase::evolution_method		= "THCode"
+THC_Core::eos_type			= "ideal"
+THC_Core::physics			= "GRHD"
+
+TmunuBase::prolongation_type		= "none"
+TmunuBase::stress_energy_storage		= "yes"
+TmunuBase::stress_energy_at_RHS		= "yes"
+TmunuBase::support_old_CalcTmunu_mechanism	= "no"
+
+HRSCCore::scheme			= "FV"
+HRSCCore::pplim			= "yes"
+HRSCCore::refluxing			= "no"
+HRSCCore::reconstruction		= "MP5"
+HRSCCore::riemann_solver		= "HLLE"
+HRSCCore::flux_split		= "LLF"
+HRSCCore::system_split		= "components"
+HRSCCore::speed_eps			= 0.05
+
+THC_Core::atmo_rho			= 1e-14
+THC_Core::atmo_eps			= 1e-2
+THC_Core::atmo_tolerance		= 0.0
+
+THC_Core::c2a_BH_alp		= 0.15
+THC_Core::c2a_rho_strict		= 2e-5
+THC_Core::c2a_set_to_nan_on_failure		= "no"
+THC_Core::c2a_fix_conservatives		= "yes"
+THC_Core::c2a_kill_on_failure		= "no"
+
+THC_Core::bc_type			= "none"
+
+THC_Core::atmo_rho			= 1e-10
+THC_Core::atmo_eps			= 1e-8
+
+EOS_Thermal::evol_eos_name		= "Hybrid"
+EOS_Thermal_Hybrid::eos_cold_file		= "/tmp/eos.pizza"
+EOS_Thermal_Hybrid::gamma_thermal		= 1.7
+EOS_Thermal_Hybrid::eps_max		= 10.0
+
+# =============================================================================
+# Spacetime evolution
+# =============================================================================
+
+ADMBase::evolution_method		= "static"
+ADMBase::lapse_evolution_method		= "static"
+ADMBase::shift_evolution_method		= "static"
+ADMBase::dtlapse_evolution_method		= "static"
+ADMBase::dtshift_evolution_method		= "static"
+
+THC_Core::fd_order			= 6
+
+# =============================================================================
+# Checkpoint
+# =============================================================================
+CarpetIOHDF5::checkpoint		= "yes"
+CarpetIOHDF5::use_reflevels_from_checkpoint	= "yes"
+
+IOUtil::checkpoint_on_terminate		= "yes"
+IOUtil::checkpoint_every		= 1024
+IOUtil::checkpoint_keep		= 1
+IOUtil::recover			= "autoprobe"
+IOUtil::checkpoint_dir		= "../checkpoint"
+IOUtil::recover_dir			= "../checkpoint"
+
+# =============================================================================
+# Output
+# =============================================================================
+IOUtil::out_dir			= "../data/"
+IOUtil::strict_io_parameter_check		= "yes"
+IOUtil::parfile_write		= "copy"
+
+CarpetIOBasic::outinfo_vars		= "
+HydroBase::rho
+"
+
+CarpetIOScalar::outscalar_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::w_lorentz
+HydroBase::eps
+HydroBase::press
+THC_Core::dens
+THC_Core::scon
+THC_Core::tau
+"
+
+CarpetIOASCII::out1d_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::w_lorentz
+HydroBase::eps
+HydroBase::press
+THC_Core::dens
+THC_Core::scon
+THC_Core::tau
+"
+
+CarpetIOHDF5::out2d_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::w_lorentz
+HydroBase::eps
+HydroBase::press
+"
+
+CarpetIOHDF5::out_vars		= "
+HydroBase::rho
+HydroBase::vel
+HydroBase::w_lorentz
+HydroBase::eps
+HydroBase::press
+"
+
+# These seem to create problems in the 2D output
+#CarpetIOHDF5::out3D_ghosts		= "no"
+#CarpetIOHDF5::out3D_outer_ghosts		= "no"
+CarpetIOHDF5::output_index		= "yes"
+
+CarpetIOBasic::outinfo_every		= 10
+CarpetIOASCII::out0d_every		= 10
+CarpetIOASCII::out1d_every		= 50
+CarpetIOASCII::out2d_every		= -1
+CarpetIOScalar::outscalar_every		= 10
+CarpetIOHDF5::out1d_every		= -1
+CarpetIOHDF5::out2d_every		= 200
+CarpetIOHDF5::out_every		= -1
+
+# vim: set ft=sh tabstop=20 noexpandtab :
