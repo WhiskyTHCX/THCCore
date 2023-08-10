@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 
@@ -39,6 +40,23 @@ static CCTK_REAL kiuchi_lmix_fit(
     }
     else {
         return a*ampl*xi*std::exp(-std::pow(std::abs(xi*b), 2.5));
+    }
+}
+
+static CCTK_REAL kiuchi2_lmix_fit(
+        CCTK_REAL const rho,
+        CCTK_REAL const lrho0,
+        CCTK_REAL const lrho1,
+        CCTK_REAL const a,
+        CCTK_REAL const b,
+        CCTK_REAL const c) {
+    CCTK_REAL const lrho = std::max(std::log10(rho), lrho0);
+    assert(std::isfinite(lrho));
+    if (lrho <= lrho1) {
+        return std::pow(10.0, a + b*lrho);
+    }
+    else {
+        return std::pow(10.0, a + b*lrho1 + c*(lrho - lrho1));
     }
 }
 
@@ -80,6 +98,23 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
             } UTILS_ENDLOOP3(thc_sg_kiuchi);
         }
     }
+    else if(CCTK_Equals(viscosity, "kiuchi2")) {
+#pragma omp parallel
+        {
+            UTILS_LOOP3(thc_sg_kiuchi2,
+                    k, 0, cctk_lsh[2],
+                    j, 0, cctk_lsh[1],
+                    i, 0, cctk_lsh[0]) {
+                int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+                CCTK_REAL const lmix = kiuchi2_lmix_fit(rho[ijk],
+                        kiuchi2_lrho0, kiuchi2_lrho1,
+                        kiuchi2_a, kiuchi2_b, kiuchi2_c);
+                nu_turb[ijk] = lmix * csound[ijk];
+                assert(std::isfinite(lmix));
+                assert(std::isfinite(nu_turb[ijk]));
+            } UTILS_ENDLOOP3(thc_sg_kiuchi2);
+        }
+    }
     else {
         CCTK_ERROR("Unknown viscosity prescription");
     }
@@ -95,5 +130,20 @@ extern "C" void THC_SG_CalcTurbVisc(CCTK_ARGUMENTS) {
                 nu_turb[ijk] = 0.0;
             }
         } UTILS_ENDLOOP3(thc_sg_lapse_cut);
+    }
+
+    if(nu_turb_limit >= 0.0) {
+        CCTK_REAL const dx = CCTK_DELTA_SPACE(0);
+        CCTK_REAL const dt = CCTK_DELTA_TIME;
+#pragma omp parallel
+        {
+            UTILS_LOOP3(thc_sg_limit,
+                    k, 0, cctk_lsh[2],
+                    j, 0, cctk_lsh[1],
+                    i, 0, cctk_lsh[0]) {
+                int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+                nu_turb[ijk] = std::min(nu_turb_limit*(dx/dt)*dx, nu_turb[ijk]);
+            } UTILS_ENDLOOP3(thc_sg_limit);
+        }
     }
 }
