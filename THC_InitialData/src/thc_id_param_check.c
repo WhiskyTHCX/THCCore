@@ -26,8 +26,10 @@ void THC_ID_ParamCheck(CCTK_ARGUMENTS) {
     DECLARE_CCTK_ARGUMENTS
     DECLARE_CCTK_PARAMETERS
 
-    if(CCTK_Equals(initial_Y_e, "THC_InitialData")) {
-        if(!CCTK_Equals(id_type, "shocktube")) {
+    if(CCTK_Equals(initial_Y_e, "THC_Initial")) {
+        if(!CCTK_Equals(id_type, "atmosphere") &&
+           !CCTK_Equals(id_type, "shocktube") &&
+           !CCTK_Equals(id_type, "static")) {
             char buf[BUFSIZ];
             snprintf(buf, BUFSIZ, "id_type = \"%s\" does not support "
                     "setting Y_e yet!", id_type);

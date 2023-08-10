@@ -16,6 +16,7 @@
 
 
 #include <math.h>
+#include <stdbool.h>
 
 #include "cctk.h"
 #include "cctk_Arguments.h"
@@ -35,6 +36,8 @@ void THC_ID_Static(CCTK_ARGUMENTS) {
         CCTK_INFO("THC_ID_Static");
     }
 
+    bool const set_Y_e = CCTK_Equals(initial_Y_e, "THC_Initial");
+
     int const siz = UTILS_GFSIZE(cctkGH);
 
 #pragma omp parallel
@@ -45,11 +48,14 @@ void THC_ID_Static(CCTK_ARGUMENTS) {
                 i, 0, cctk_lsh[0]) {
             int const ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-            rho[ijk]  = 1.0;
+            rho[ijk]  = static_rho;
             velx[ijk] = static_velx;
             vely[ijk] = static_vely;
             velz[ijk] = static_velz;
             eps[ijk]  = static_eps;
+            if (set_Y_e) {
+                Y_e[ijk] = static_ye;
+            }
 
             for(int e = 0; e < ntracers; ++e) {
                 tracer[ijk + e*siz] = 0;

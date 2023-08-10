@@ -15,6 +15,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <stdbool.h>
+
 #include "cctk.h"
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
@@ -33,6 +35,8 @@ void THC_ID_Atmosphere(CCTK_ARGUMENTS) {
         CCTK_INFO("THC_ID_Atmosphere");
     }
 
+    bool const set_Y_e = CCTK_Equals(initial_Y_e, "THC_Initial");
+
 #pragma omp parallel
     {
         UTILS_LOOP3(thc_id_atmosphere,
@@ -46,6 +50,9 @@ void THC_ID_Atmosphere(CCTK_ARGUMENTS) {
             vely[ijk] = 0.0;
             velz[ijk] = 0.0;
             eps[ijk]  = 0.0;
+            if (set_Y_e) {
+                Y_e[ijk] = 0.0;
+            }
         } UTILS_ENDLOOP3(thc_id_atmosphere);
     }
 }
