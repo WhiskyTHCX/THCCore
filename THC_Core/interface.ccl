@@ -4,6 +4,7 @@ INHERITS:       Grid HydroBase HRSCCore Time TmunuBase
 
 INCLUDE HEADER: thc_macro.hh IN thc_macro.hh
 INCLUDE HEADER: thc_sph_grid.h IN thc_sph_grid.h
+INCLUDE HEADER: thc_printer.hh IN thc_printer.hh
 
 # Boundary conditions
 CCTK_INT FUNCTION Boundary_SelectVarForBC(                                     \
